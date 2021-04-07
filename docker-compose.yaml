@@ -7,7 +7,7 @@ services:
     ports:
       - 5000:5000
     volumes:
-      - ./api:/code # use only in development, allows for changes on the fly
+      - ./api/code:/code # use only in development, allows for changes on the fly
 
   mongodb:
     build:
