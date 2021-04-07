@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  flaskapi:
+    build:
+      context: ./api
+      dockerfile: .
+    ports:
+      - 5000:5000
+    volumes:
+      - ./api:/code # use only in development, allows for changes on the fly
+
+  mongodb:
+    build:
+      context: ./db
+      dockerfile: .
+    ports:
+      - 27017:27017
+    volumes:
+      - ./db_data/:/data/db # to make db persistent
