@@ -9,11 +9,12 @@ services:
     volumes:
       - ./api/code:/code # use only in development, allows for changes on the fly
 
-  mongodb:
-    build:
-      context: ./db
-      dockerfile: .
-    ports:
-      - 27017:27017
-    volumes:
-      - ./db_data/:/data/db # to make db persistent
+# todo: check how to handle a prefilled mongodb docker image
+  # mongodb:
+  #   build:
+  #     context: ./db
+  #     dockerfile: .
+  #   ports:
+  #     - 27017:27017
+  #   volumes:
+  #     - ./db_data/:/data/db # to make db persistent
