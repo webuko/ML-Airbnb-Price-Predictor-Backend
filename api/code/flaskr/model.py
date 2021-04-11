@@ -1,5 +1,3 @@
-from decimal import *
-
 def load_model():
     return True
 

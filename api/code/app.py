@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from bson.json_util import dumps
-from flaskr.model import *
+from flaskr.model import get_prediction
 
 app = Flask(__name__)
 
