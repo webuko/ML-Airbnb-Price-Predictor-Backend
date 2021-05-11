@@ -9,5 +9,5 @@ def test_model():
     assert load_model() is True
 
 def test_get_prediction():
-    prediction = get_prediction("1.02", "2.03", "Apartment", "Big bedroom", "1", "1")
-    assert prediction == "1.02"
+    prediction = get_prediction("1.02", "2.03")
+    assert prediction > 7.4296

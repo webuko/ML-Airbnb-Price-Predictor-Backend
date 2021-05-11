@@ -29,16 +29,12 @@ def name():
 def get_listings():
     return to_json(db.listings_2019.find_one({"id": "1944"}))
 
-@app.route('/model')
+@app.route('/prediction')
 def prediction():
-    return jsonify(get_prediction(
-        request.form['latitude'],
-        request.form['longitude'],
-        request.form['property_type'],
-        request.form['room_type'],
-        request.form['bedrooms'],
-        request.form['guests_included'],
-        ))
+    latitude = request.args['latitude']
+    longitude = request.args['longitude']
+    print(request.__dict__.items())
+    return jsonify(get_prediction(latitude, longitude))
 
 if __name__ == '__main__':
     app.run()
