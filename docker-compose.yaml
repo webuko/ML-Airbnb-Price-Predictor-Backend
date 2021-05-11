@@ -7,7 +7,7 @@ services:
     command:
       - '--model_config_file=/models/model.config'
     ports: 
-      - 8500-8501
+      - 8501:8501
     depends_on: 
       - flaskapi
 
