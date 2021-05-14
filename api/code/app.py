@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, abort
 from pymongo import MongoClient
 from bson.json_util import dumps
-from flaskr.model import get_prediction
+from flaskr.model import get_prediction, validate_prediction_request
 import json
 
 
@@ -86,6 +86,21 @@ def filter_listings():
                 filter[criteria] = {'$in': el}
 
     return to_json(db.listings.find(filter))
+
+
+@app.route('/api/pricePrediction', methods=['POST'])
+def price_prediction():
+    validated_request = validate_prediction_request(request)
+
+    if 'error' in validated_request:
+        abort(400, validated_request['error'])
+
+    prediction = get_prediction(validated_request)
+    if prediction:
+        return json.dumps({'price': prediction})
+    
+    abort(400, 'did not work')
+
 
 
 if __name__ == '__main__':
