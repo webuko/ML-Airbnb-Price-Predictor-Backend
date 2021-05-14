@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, abort
 from pymongo import MongoClient
 from bson.json_util import dumps
 from flaskr.model import get_prediction
+import json
 
 
 app = Flask(__name__)
@@ -50,24 +51,42 @@ def all_linstings():
     return to_json(db.listings.find(keys_filter, keys_projection))
 
 
-'''@app.route('/')
-def hello():
-    return 'Hello everyone!'
+@app.route('/api/filterListings', methods=['POST'])
+def filter_listings():
+    abort_msg = 'Provided filter criteria is not correctly provided'
+    filter = {}
 
-@app.route('/db-name')
-def name():
-    return db.name
+    allowed_criteria = {
+       'price': 'num',
+       'bedrooms': 'num',
+       'bathrooms': 'num',
+       'accomodates': 'num',
+       'property_type': 'str',
+       'room_type': 'str',
+       'neighbourhood': 'str'
+    }
 
-@app.route('/db-listings')
-def get_listings():
-    return to_json(db.listings_2019.find_one({"id": "1944"}))
+    for criteria, type in allowed_criteria.items():
+        if request.form.get(criteria):
+            try:
+                el = json.loads(request.form[criteria])
+            except ValueError as e:
+                abort(400, abort_msg)
+            
+            if type == 'num':
+                if not isinstance(el, list) or \
+                    len(el) != 2 or \
+                    (not str(el[0]).isdigit() or not str(el[1]).isdigit()):
+                    abort(400, abort_msg)
+                filter[criteria] = {'$gte': el[0], '$lte': el[1]}
+            else:
+                if not isinstance(el, list) or \
+                    len([e for e in el if str(e).isdigit()]) > 0:
+                    abort(400, abort_msg)
+                filter[criteria] = {'$in': el}
 
-@app.route('/prediction')
-def prediction():
-    latitude = request.args['latitude']
-    longitude = request.args['longitude']
-    print(request.__dict__.items())
-    return jsonify(get_prediction(latitude, longitude))'''
+    return to_json(db.listings.find(filter))
+
 
 if __name__ == '__main__':
     app.run()
