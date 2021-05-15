@@ -28,4 +28,4 @@ The API aims to deliver the following functionalities:
 - not only retrieve data but filter data (e.g. for price ranges or a specific neighbourhood)
 - get price predictions for a not yet published Airbnb listings
 
-As stated above, please consult the [Wiki](https://github.com/webuko/backend/wiki) for a more detailed explanation. For an overview of the ongoing efforts to improve the functionalities, have a look at the [Issues](https://github.com/webuko/backend/issues) section in this repository.
+As stated above, please consult the [Wiki](https://github.com/webuko/backend/wiki/API-Documentation) for a more detailed explanation. For an overview of the ongoing efforts to improve the functionalities, have a look at the [Issues](https://github.com/webuko/backend/issues) section in this repository.
