@@ -8,7 +8,7 @@ This repository serves the purpose of building an API for retrieving data relate
 
 ## Data
 
-The data used in this project comes from Airbnb. For the purpose of our project, we use listings data for Berlin. Basically, the listing dataset contains infromation about each listing. This includes, for instance, the listing's name, description, price, number of bathrooms and bedrooms. In fact, the dataset contains over 100 attributes. Yes, that's a lot of information. So for a more detailed overview of the data, have a look at this website: http://insideairbnb.com/get-the-data.html.
+The data used in this project comes from Airbnb. For the purpose of our project, we use listings data for Berlin. Basically, the listing dataset contains infromation about each listing. This includes, for instance, the listing's name, description, price, number of bathrooms and bedrooms. In fact, the dataset contains over 100 attributes. Yes, that's a lot of information. So for a more detailed overview of the data, have a look at this [website](http://insideairbnb.com/get-the-data.html).
 
 ## Frameworks
 
