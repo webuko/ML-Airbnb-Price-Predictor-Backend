@@ -1,7 +1,7 @@
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, abort
 from pymongo import MongoClient
-from bson.json_util import dumps
 from flaskr.model import get_prediction, validate_prediction_request
+from flaskr.request_helper import to_json, filter_listings
 import json
 
 
@@ -13,47 +13,17 @@ client = MongoClient(host='mongodb',
                     authSource='airbnb')
 db = client['airbnb']
 
-def to_json(data):
-    return dumps(data)
-
 
 @app.route('/api/allListings', methods=['GET', 'POST'])
 def all_linstings():
-    if request.method == 'POST':
-        if request.get_json():
-            if not isinstance(request.json, list):
-                abort(400, 'Request data must be provided as array of keys')
-            
-            keys_projection = {str(key): 1 for key in request.json}
-            keys_projection['_id'] = 0
-            keys_filter = {str(key): {"$exists": 1} for key in request.json}
-        else:
-            abort(400, 'Request data must have content-type application/json')
-    else:
-        keys_projection = {
-            '_id': 0,
-            'name': 1,
-            'price': 1,
-            'longitude': 1,
-            'latitude': 1,
-            'description': 1,
-            'picture_url': 1
-        }
-        keys_filter = {
-            'name': {'$exists': 1},
-            'price': {'$exists': 1},
-            'longitude': {'$exists': 1},
-            'latitude': {'$exists': 1},
-            'description': {'$exists': 1},
-            'picture_url': {'$exists': 1},
-        }
+    keys_filter, keys_projection = filter_listings(request)
     
     return to_json(db.listings.find(keys_filter, keys_projection))
 
 
 @app.route('/api/filterListings', methods=['POST'])
-def filter_listings():
-    abort_msg = 'Provided filter criteria is not correctly provided'
+def filtered_listings():
+    abort_msg = 'filter criteria is not correctly provided'
     filter = {}
 
     allowed_criteria = {
@@ -66,26 +36,39 @@ def filter_listings():
        'neighbourhood': 'str'
     }
 
-    for criteria, type in allowed_criteria.items():
-        if request.form.get(criteria):
-            try:
-                el = json.loads(request.form[criteria])
-            except ValueError as e:
-                abort(400, abort_msg)
-            
-            if type == 'num':
-                if not isinstance(el, list) or \
-                    len(el) != 2 or \
-                    (not str(el[0]).isdigit() or not str(el[1]).isdigit()):
-                    abort(400, abort_msg)
-                filter[criteria] = {'$gte': el[0], '$lte': el[1]}
-            else:
-                if not isinstance(el, list) or \
-                    len([e for e in el if str(e).isdigit()]) > 0:
-                    abort(400, abort_msg)
-                filter[criteria] = {'$in': el}
+    if not request.form.get('criteria'):
+        abort(400, 'criteria parameter is missing')
 
-    return to_json(db.listings.find(filter))
+    try:
+        parsed_list = json.loads(request.form['criteria'])
+    except ValueError as e:
+        abort(400, 'criteria should be provided as array of objects')
+    if not isinstance(parsed_list, list) or len([d for d in parsed_list if not isinstance(d, dict)]):
+        abort(400, 'criteria should be provided as array of objects')
+
+    for criteria, type in allowed_criteria.items():
+        el = next((item for item in parsed_list if criteria in item), None)
+        if el:
+            el = el[criteria]
+        else:
+            continue
+            
+        if type == 'num':
+            if not isinstance(el, list) or \
+                len(el) != 2 or \
+                (not str(el[0]).isdigit() or not str(el[1]).isdigit()):
+                abort(400, abort_msg)
+            filter[criteria] = {'$gte': el[0], '$lte': el[1]}
+        else:
+            if not isinstance(el, list) or \
+                len([e for e in el if str(e).isdigit()]) > 0:
+                abort(400, abort_msg)
+            filter[criteria] = {'$in': el}
+
+    force_GET = request.form.get('fields') is None
+    _, keys_projection = filter_listings(request, force_GET)
+
+    return to_json(db.listings.find(filter, keys_projection))
 
 
 @app.route('/api/pricePrediction', methods=['POST'])
