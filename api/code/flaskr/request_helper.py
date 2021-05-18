@@ -8,7 +8,7 @@ def to_json(data):
 
 
 DEFAULT_RETURN_KEYS = [
-    'id', 'name', 'description',
+    'id', 'name', 'description', 'price'
     'picture_url', 'bedrooms', 'bathrooms',
     'accommodates', 'property_type', 'room_type',
     'neighbourhood', 'longitude', 'latitude',
