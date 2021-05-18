@@ -30,7 +30,7 @@ def filtered_listings():
        'price': 'num',
        'bedrooms': 'num',
        'bathrooms': 'num',
-       'accomodates': 'num',
+       'accommodates': 'num',
        'property_type': 'str',
        'room_type': 'str',
        'neighbourhood': 'str'
@@ -40,17 +40,15 @@ def filtered_listings():
         abort(400, 'criteria parameter is missing')
 
     try:
-        parsed_list = json.loads(request.form['criteria'])
+        parsed_dict = json.loads(request.form['criteria'])
     except ValueError as e:
-        abort(400, 'criteria should be provided as array of objects')
-    if not isinstance(parsed_list, list) or len([d for d in parsed_list if not isinstance(d, dict)]):
-        abort(400, 'criteria should be provided as array of objects')
+        abort(400, 'criteria should be provided object')
+    if not isinstance(parsed_dict, dict):
+        abort(400, 'criteria should be provided object')
 
     for criteria, type in allowed_criteria.items():
-        el = next((item for item in parsed_list if criteria in item), None)
-        if el:
-            el = el[criteria]
-        else:
+        el = parsed_dict.get(criteria, None)
+        if not el:
             continue
             
         if type == 'num':
