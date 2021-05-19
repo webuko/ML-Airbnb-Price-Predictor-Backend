@@ -3,15 +3,21 @@ from pymongo import MongoClient
 from flaskr.model import get_prediction, validate_prediction_request
 from flaskr.request_helper import to_json, filter_listings
 import json
+import os
 
 
 app = Flask(__name__)
 
+
+# import database credentials from environment
+db_username = os.getenv('DB_USERNAME')
+db_password = os.getenv('DB_PASSWORD')
+db_name = os.getenv('DB_NAME')
 client = MongoClient(host='mongodb',
-                     username='airbnb-user', 
-                     password='pass',
-                    authSource='airbnb')
-db = client['airbnb']
+                     username=db_username, 
+                     password=db_password,
+                    authSource=db_name)
+db = client[db_name]
 
 
 @app.route('/api/allListings', methods=['GET', 'POST'])
