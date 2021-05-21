@@ -1,5 +1,3 @@
-import tensorflow as tf
-from tensorflow import keras
 import json
 import requests
 import pickle
