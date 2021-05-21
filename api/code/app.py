@@ -36,18 +36,14 @@ def filtered_listings():
        'neighbourhood': 'str'
     }
 
-    if not request.form.get('criteria'):
-        abort(400, 'criteria parameter is missing')
+    if not request.json or not isinstance(request.json, dict):
+        abort(400, 'Request data must be transmitted as JSON object')
 
-    try:
-        parsed_dict = json.loads(request.form['criteria'])
-    except ValueError as e:
-        abort(400, 'criteria should be provided object')
-    if not isinstance(parsed_dict, dict):
-        abort(400, 'criteria should be provided object')
+    if not 'criteria' in request.json:
+        abort(400, 'criteria parameter missing')
 
     for criteria, type in allowed_criteria.items():
-        el = parsed_dict.get(criteria, None)
+        el = request.json['criteria'].get(criteria, None)
         if not el:
             continue
             
@@ -63,7 +59,7 @@ def filtered_listings():
                 abort(400, abort_msg)
             filter[criteria] = {'$in': el}
 
-    force_GET = request.form.get('fields') is None
+    force_GET = request.json.get('fields') is None
     _, keys_projection = filter_listings(request, force_GET)
 
     return to_json(db.listings.find(filter, keys_projection))
@@ -74,13 +70,13 @@ def price_prediction():
     validated_request = validate_prediction_request(request)
 
     if 'error' in validated_request:
-        abort(400, validated_request['error'])
+        abort(validated_request['error']['code'], validated_request['error']['msg'])
 
     prediction = get_prediction(validated_request)
     if prediction:
         return json.dumps({'price': prediction})
     
-    abort(400, 'did not work')
+    abort(500, 'Internal server error. Please try again later')
 
 
 
