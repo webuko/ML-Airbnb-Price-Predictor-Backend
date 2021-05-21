@@ -19,6 +19,7 @@ jobs:
         pip install flask
         pip install requests
         pytest --cov=./ --cov-report=xml
+        ls
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
