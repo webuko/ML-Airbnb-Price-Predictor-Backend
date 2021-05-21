@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 from flask import Flask, request
 import random
-import sklearn
 import os
 
 parent = Path(__file__).resolve().parents[1]
