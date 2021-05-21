@@ -4,19 +4,20 @@ import sys
 from pathlib import Path
 from flask import Flask, request
 import random
+import sklearn
 import os
 
 parent = Path(__file__).resolve().parents[1]
 sys.path.append(str(parent)+'/code/flaskr/')
 import model
-model.PRICE_PREDICTOR_ENCODER_LOCATION = str(parent)+'/code/encoders/airbnb_price_net/1/'
+model.PRICE_PREDICTOR_ENCODER_LOCATION = '/home/runner/work/backend/backend/api/code/encoders/airbnb_price_net/1/'
 
 # '''
 # The following block contains tests regarding the encoders that are used for some features needed in price prediction.
 # The block just below tests whether all necessary encoders can be loaded.
 # '''
-# def test_neighbourhood_encoder_available():
-#     assert model.encoder_classes('neighbourhood') is not False
+def test_neighbourhood_encoder_available():
+    assert model.encoder_classes('neighbourhood') is not False
 
 # def test_property_type_encoder_available():
 #     assert model.encoder_classes('property_type') is not False
