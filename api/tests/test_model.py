@@ -8,7 +8,7 @@ import random
 parent = Path(__file__).resolve().parents[1]
 sys.path.append(str(parent)+'/code/flaskr/')
 import model
-model.PRICE_PREDICTOR_ENCODER_LOCATION = 'code/encoders/airbnb_price_net/1/'
+model.PRICE_PREDICTOR_ENCODER_LOCATION = 'api/code/encoders/airbnb_price_net/1/'
 
 '''
 The following block contains tests regarding the encoders that are used for some features needed in price prediction.
