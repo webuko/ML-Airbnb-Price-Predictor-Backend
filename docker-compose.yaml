@@ -19,37 +19,12 @@ services:
       - 5000:5000
     volumes:
       - ./api/code:/code
-      # - .:/flask_server
-    # depends_on:
-    #   - tensorflow-serving
 
-  # tensorflow-serving:
-  #   image: docker.io/bitnami/tensorflow-serving:2-debian-10
-  #   container_name: tensorflow-serving
-  #   ports:
-  #     - 8500:8500
-  #     - 8501:8501
-  #   volumes:
-  #     - ./serving/conf:/bitnami/tensorflow-serving/conf/
-  #     - ./serving/model-data:/bitnami/model-data
-
-# version: "3.9"
-# services:
-#   flaskapi:
-#     build:
-#       context: ./api
-#       dockerfile: .
-#     ports:
-#       - 5000:5000
-#     volumes:
-#       - ./api/code:/code # use only in development, allows for changes on the fly
-
-# todo: check how to handle a prefilled mongodb docker image
-  # mongodb:
-  #   build:
-  #     context: ./db
-  #     dockerfile: .
-  #   ports:
-  #     - 27017:27017
-  #   volumes:
-  #     - ./db_data/:/data/db # to make db persistent
+  mongodb:
+    build:
+      context: ./db
+      dockerfile: .
+    ports:
+      - 27017:27017
+    volumes:
+      - ./db_data/:/data/db # to make db persistent
