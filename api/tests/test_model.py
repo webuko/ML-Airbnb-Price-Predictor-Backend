@@ -8,6 +8,7 @@ import random
 parent = Path(__file__).resolve().parents[1]
 sys.path.append(str(parent)+'/code/flaskr/')
 import model
+from model import get_prediction
 model.PRICE_PREDICTOR_ENCODER_LOCATION = str(parent)+'/code/encoders/airbnb_price_net/1/'
 
 '''
@@ -77,3 +78,8 @@ def test_model_input_validation_valid_response(flask_app, valid_model_input):
     with flask_app.test_request_context(data=valid_model_input):
         validated = model.validate_prediction_request(request)
         assert 'instances' in validated
+
+def test_get_prediction(response_mock):
+    with response_mock('POST ' + model.PRICE_PREDICTOR_URL + ' -> 200 :{"predictions": [[42], [6]]}', bypass=False):
+        p = get_prediction("anything")
+        assert p == '42'

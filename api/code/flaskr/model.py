@@ -5,9 +5,9 @@ from collections import OrderedDict
 
 
 # url for accessing price prediction micro service
-PRICE_PREDICTOR_URL = 'http://tensorflow-serving:8501/v1/models/price_predictor:predict'
+PRICE_PREDICTOR_URL = "http://tensorflow-serving:8501/v1/models/price_predictor:predict"
 # model (and version) to use
-PRICE_PREDICTOR_ENCODER_LOCATION = 'encoders/airbnb_price_net/1/'
+PRICE_PREDICTOR_ENCODER_LOCATION = "encoders/airbnb_price_net/1/"
 
 # this ordered dict stores all necessary fields for the price prediction
 # note that it's an ordered dict and the order corresponds to the order of the feature list that must be provided to the prediction model
