@@ -8,9 +8,9 @@ import json
 app = Flask(__name__)
 
 client = MongoClient(host='mongodb',
-                     username='airbnb-user', 
-                     password='pass',
-                    authSource='airbnb')
+    username='airbnb-user',
+    password='pass',
+    authSource='airbnb')
 db = client['airbnb']
 
 
@@ -46,7 +46,7 @@ def filtered_listings():
         el = request.json['criteria'].get(criteria, None)
         if not el:
             continue
-            
+
         if type == 'num':
             if not isinstance(el, list) or \
                 len(el) != 2 or \

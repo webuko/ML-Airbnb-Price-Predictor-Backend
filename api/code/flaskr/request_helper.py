@@ -1,7 +1,5 @@
 from flask import abort
 from bson.json_util import dumps
-import json
-
 
 def to_json(data):
     return dumps(data)
