@@ -1,4 +1,4 @@
-FROM mongo:latest
+FROM mongo:4.4.6
 
 COPY seed_data_1.json /seed_data_1.json
 COPY seed_data_2.json /seed_data_2.json

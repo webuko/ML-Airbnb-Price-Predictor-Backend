@@ -1,4 +1,4 @@
-FROM mongo:latest
+FROM mongo:4.4.6
 
 # when in production --> use secrets
 ENV MONGO_INITDB_ROOT_USERNAME root
