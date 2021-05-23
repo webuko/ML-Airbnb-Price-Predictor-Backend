@@ -11,11 +11,13 @@ import model
 model.PRICE_PREDICTOR_ENCODER_LOCATION = str(parent) + '/code/encoders/airbnb_price_net/1/'
 
 
+"""
+Contains tests regarding the encoders that are used for some features needed in price prediction.
+The block just below tests whether all necessary encoders can be loaded.
+"""
+
+
 def test_neighbourhood_encoder_available():
-    """
-    The following block contains tests regarding the encoders that are used for some features needed in price prediction.
-    The block just below tests whether all necessary encoders can be loaded.
-    """
     assert model.encoder_classes('neighbourhood') is not False
 
 
