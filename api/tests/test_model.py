@@ -10,11 +10,8 @@ import model
 
 model.PRICE_PREDICTOR_ENCODER_LOCATION = str(parent) + '/code/encoders/airbnb_price_net/1/'
 
-
-"""
-Contains tests regarding the encoders that are used for some features needed in price prediction.
-The block just below tests whether all necessary encoders can be loaded.
-"""
+"""Contains tests regarding the encoders that are used for some features needed in price prediction. The block just 
+below tests whether all necessary encoders can be loaded."""
 
 
 def test_neighbourhood_encoder_available():
@@ -95,6 +92,12 @@ def test_model_input_validation_valid_response(flask_app, valid_model_input):
 
 
 def test_get_prediction(response_mock):
-    with response_mock('POST ' + model.PRICE_PREDICTOR_URL + ' -> 200 :{"predictions": [[42], [6]]}', bypass=False):
-        p = model.get_prediction("anything")
+    expected_response = '{\n' \
+                        '   \"predictions\": [\n' \
+                        '       [42],\n' \
+                        '       [6]\n' \
+                        '   ]\n' \
+                        '}'
+    with response_mock('POST ' + model.PRICE_PREDICTOR_URL + f' -> 200 :{expected_response}', bypass=False):
+        p = model.get_prediction('anything')
         assert p == '42'

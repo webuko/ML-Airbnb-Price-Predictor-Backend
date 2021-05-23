@@ -5,18 +5,16 @@ from flaskr.request_helper import to_json, filter_listings
 import json
 import os
 
-
 app = Flask(__name__)
-
 
 # import database credentials from environment
 db_username = os.getenv('DB_USERNAME')
 db_password = os.getenv('DB_PASSWORD')
 db_name = os.getenv('DB_NAME')
 client = MongoClient(host='mongodb',
-    username=db_username,
-    password=db_password,
-    authSource=db_name)
+                     username=db_username,
+                     password=db_password,
+                     authSource=db_name)
 db = client[db_name]
 
 
@@ -32,13 +30,13 @@ def filtered_listings():
     filter = {}
 
     allowed_criteria = {
-       'price': 'num',
-       'bedrooms': 'num',
-       'bathrooms': 'num',
-       'accommodates': 'num',
-       'property_type': 'str',
-       'room_type': 'str',
-       'neighbourhood': 'str'
+        'price': 'num',
+        'bedrooms': 'num',
+        'bathrooms': 'num',
+        'accommodates': 'num',
+        'property_type': 'str',
+        'room_type': 'str',
+        'neighbourhood': 'str'
     }
 
     if not request.json or not isinstance(request.json, dict):
@@ -54,13 +52,13 @@ def filtered_listings():
 
         if type == 'num':
             if not isinstance(el, list) or \
-                len(el) != 2 or \
-                (not str(el[0]).isdigit() or not str(el[1]).isdigit()):
+                    len(el) != 2 or \
+                    (not str(el[0]).isdigit() or not str(el[1]).isdigit()):
                 abort(400, abort_msg)
             filter[criteria] = {'$gte': el[0], '$lte': el[1]}
         else:
             if not isinstance(el, list) or \
-                len([e for e in el if str(e).isdigit()]) > 0:
+                    len([e for e in el if str(e).isdigit()]) > 0:
                 abort(400, abort_msg)
             filter[criteria] = {'$in': el}
 
@@ -80,9 +78,8 @@ def price_prediction():
     prediction = get_prediction(validated_request)
     if prediction:
         return json.dumps({'price': prediction})
-    
-    abort(500, 'Internal server error. Please try again later')
 
+    abort(500, 'Internal server error. Please try again later')
 
 
 if __name__ == '__main__':
