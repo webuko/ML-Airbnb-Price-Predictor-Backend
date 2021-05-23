@@ -1,4 +1,4 @@
-from flask import Flask, request, abort
+from flask import Flask, request, abort, make_response
 from pymongo import MongoClient
 from flaskr.model import get_prediction, validate_prediction_request
 from flaskr.request_helper import to_json, filter_listings
@@ -18,7 +18,13 @@ db = client['airbnb']
 def all_linstings():
     keys_filter, keys_projection = filter_listings(request)
     
-    return to_json(db.listings.find(keys_filter, keys_projection))
+    json = to_json(db.listings.find(keys_filter, keys_projection))
+
+    response = make_response(json, 200)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Content-type'] = 'application/json'
+    
+    return response
 
 
 @app.route('/api/filterListings', methods=['POST'])
@@ -62,7 +68,13 @@ def filtered_listings():
     force_GET = request.json.get('fields') is None
     _, keys_projection = filter_listings(request, force_GET)
 
-    return to_json(db.listings.find(filter, keys_projection))
+    json = to_json(db.listings.find(filter, keys_projection))
+
+    response = make_response(json, 200)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Content-type'] = 'application/json'
+    
+    return response
 
 
 @app.route('/api/pricePrediction', methods=['POST'])
@@ -74,7 +86,13 @@ def price_prediction():
 
     prediction = get_prediction(validated_request)
     if prediction:
-        return json.dumps({'price': prediction})
+        json = json.dumps({'price': prediction})
+
+        response = make_response(json, 200)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Content-type'] = 'application/json'
+    
+        return response
     
     abort(500, 'Internal server error. Please try again later')
 
