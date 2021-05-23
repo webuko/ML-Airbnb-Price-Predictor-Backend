@@ -1,4 +1,5 @@
 from flask import Flask, request, abort, make_response
+from flask_cors import CORS, cross_origin
 from flaskr.model import get_prediction, validate_prediction_request, allowed_prediction_features
 from flaskr.request_helper import filter_listings
 
@@ -9,6 +10,7 @@ from bson.json_util import dumps as bson_dumps
 
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/api/*": {'origins': '*'}})
 
 client = MongoClient(host='mongodb',
                      username='airbnb-user', 
@@ -18,19 +20,20 @@ db = client['airbnb']
 
 
 @app.route('/api/allListings', methods=['GET', 'POST'])
+@cross_origin(methods=['GET', 'POST'])
 def all_linstings():
     keys_filter, keys_projection = filter_listings(request)
     
     json_data = bson_dumps(db.listings.find(keys_filter, keys_projection))
 
     response = make_response(json_data, 200)
-    response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Content-type'] = 'application/json'
-    
+
     return response
 
 
 @app.route('/api/filterListings', methods=['POST'])
+@cross_origin(methods=['POST'])
 def filtered_listings():
     abort_msg = 'filter criteria is not correctly provided'
     filter = {}
@@ -74,13 +77,13 @@ def filtered_listings():
     json_data = bson_dumps(db.listings.find(filter, keys_projection))
 
     response = make_response(json_data, 200)
-    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Allow'] = 'POST'
     response.headers['Content-type'] = 'application/json'
-    
+
     return response
 
-
 @app.route('/api/pricePrediction', methods=['POST'])
+@cross_origin(methods=['POST'])
 def price_prediction():
     validated_request = validate_prediction_request(request)
 
@@ -92,7 +95,6 @@ def price_prediction():
         json_data = json_dumps({'price': prediction})
 
         response = make_response(json_data, 200)
-        response.headers['Access-Control-Allow-Origin'] = '*'
         response.headers['Content-type'] = 'application/json'
     
         return response
@@ -101,14 +103,14 @@ def price_prediction():
 
 
 @app.route('/api/pricePredictionParamValues', methods=['GET'])
+@cross_origin(methods=['GET'])
 def price_prediction_param_values():
     param_values = allowed_prediction_features()
     json_data = json_dumps(param_values)
 
     response = make_response(json_data, 200)
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Content-type'] = 'application/json'
-    
+    response.headers['Content-Type'] = 'application/json'
+
     return response
 
 

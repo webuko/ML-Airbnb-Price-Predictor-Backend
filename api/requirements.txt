@@ -1,4 +1,6 @@
 flask
+flask-cors
 pymongo
-tensorflow
+requests
+#tensorflow==2.2
 sklearn
