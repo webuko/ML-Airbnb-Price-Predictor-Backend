@@ -82,6 +82,7 @@ def filtered_listings():
 
     return response
 
+
 @app.route('/api/pricePrediction', methods=['POST'])
 @cross_origin(methods=['POST'])
 def price_prediction():
