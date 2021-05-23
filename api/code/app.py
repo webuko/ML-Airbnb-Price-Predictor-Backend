@@ -1,8 +1,11 @@
 from flask import Flask, request, abort, make_response
+from flaskr.model import get_prediction, validate_prediction_request, allowed_prediction_features
+from flaskr.request_helper import filter_listings
+
 from pymongo import MongoClient
-from flaskr.model import get_prediction, validate_prediction_request
-from flaskr.request_helper import to_json, filter_listings
-import json
+
+from json import dumps as json_dumps
+from bson.json_util import dumps as bson_dumps
 
 
 app = Flask(__name__)
@@ -18,9 +21,9 @@ db = client['airbnb']
 def all_linstings():
     keys_filter, keys_projection = filter_listings(request)
     
-    json = to_json(db.listings.find(keys_filter, keys_projection))
+    json_data = bson_dumps(db.listings.find(keys_filter, keys_projection))
 
-    response = make_response(json, 200)
+    response = make_response(json_data, 200)
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Content-type'] = 'application/json'
     
@@ -68,9 +71,9 @@ def filtered_listings():
     force_GET = request.json.get('fields') is None
     _, keys_projection = filter_listings(request, force_GET)
 
-    json = to_json(db.listings.find(filter, keys_projection))
+    json_data = bson_dumps(db.listings.find(filter, keys_projection))
 
-    response = make_response(json, 200)
+    response = make_response(json_data, 200)
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Content-type'] = 'application/json'
     
@@ -86,9 +89,9 @@ def price_prediction():
 
     prediction = get_prediction(validated_request)
     if prediction:
-        json = json.dumps({'price': prediction})
+        json_data = json_dumps({'price': prediction})
 
-        response = make_response(json, 200)
+        response = make_response(json_data, 200)
         response.headers['Access-Control-Allow-Origin'] = '*'
         response.headers['Content-type'] = 'application/json'
     
@@ -96,6 +99,17 @@ def price_prediction():
     
     abort(500, 'Internal server error. Please try again later')
 
+
+@app.route('/api/pricePredictionParamValues', methods=['GET'])
+def price_prediction_param_values():
+    param_values = allowed_prediction_features()
+    json_data = json_dumps(param_values)
+
+    response = make_response(json_data, 200)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Content-type'] = 'application/json'
+    
+    return response
 
 
 if __name__ == '__main__':

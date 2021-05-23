@@ -1,14 +1,15 @@
-from collections import OrderedDict
-import pytest
 import sys
 from pathlib import Path
-from flask import Flask, request
-import random
 
+from flask import Flask, request
 parent = Path(__file__).resolve().parents[1]
 sys.path.append(str(parent)+'/code/flaskr/')
 import model
 model.PRICE_PREDICTOR_ENCODER_LOCATION = str(parent)+'/code/encoders/airbnb_price_net/1/'
+
+import random
+from collections import OrderedDict
+import pytest
 
 '''
 The following block contains tests regarding the encoders that are used for some features needed in price prediction.

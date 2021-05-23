@@ -1,10 +1,4 @@
 from flask import abort
-from bson.json_util import dumps
-import json
-
-
-def to_json(data):
-    return dumps(data)
 
 
 DEFAULT_RETURN_KEYS = [
@@ -13,6 +7,7 @@ DEFAULT_RETURN_KEYS = [
     'accommodates', 'property_type', 'room_type',
     'neighbourhood', 'longitude', 'latitude',
     ]
+
 
 def filter_listings(request, force_GET=False):
     if request.method == 'POST' and not force_GET:
