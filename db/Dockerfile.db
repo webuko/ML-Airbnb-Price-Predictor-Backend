@@ -12,3 +12,9 @@ ADD create_user.js /docker-entrypoint-initdb.d/
 RUN sed -i 's/db_name/airbnb/g' docker-entrypoint-initdb.d/create_user.js
 RUN sed -i 's/db_user/airbnb-user/g' docker-entrypoint-initdb.d/create_user.js
 RUN sed -i 's/db_password/pass/g' /docker-entrypoint-initdb.d/create_user.js
+
+COPY seed_data_1.json /seed_data_1.json
+COPY seed_data_2.json /seed_data_2.json
+
+COPY import_data.sh /
+ENTRYPOINT /import_data.sh airbnb airbnb-user pass
