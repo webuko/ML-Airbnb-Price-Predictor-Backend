@@ -23,7 +23,6 @@ db = client[db_name]
 @app.route('/api/allListings', methods=['GET', 'POST'])
 def all_linstings():
     keys_filter, keys_projection = filter_listings(request)
-    
     return to_json(db.listings.find(keys_filter, keys_projection))
 
 

@@ -18,8 +18,7 @@ def filter_listings(request, force_GET=False):
             abort(400, 'fields parameter missing')
 
         if not isinstance(request.json['fields'], list):
-              abort(400, 'Request data must be provided as array of keys')
-        
+            abort(400, 'Request data must be provided as array of keys')
         force_fields = False
         if request.json.get('force_fields'):
             if not isinstance(request.json['force_fields'], bool):
