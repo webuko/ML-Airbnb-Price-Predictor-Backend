@@ -3,9 +3,10 @@ from flask import abort
 
 DEFAULT_RETURN_KEYS = [
     'id', 'name', 'description', 'price',
-    'picture_url', 'bedrooms', 'bathrooms',
-    'accommodates', 'property_type', 'room_type',
-    'neighbourhood', 'longitude', 'latitude',
+    'host_name', 'host_picture_url', 'picture_url',
+    'bedrooms', 'bathrooms','bedrooms', 'accommodates',
+    'property_type', 'room_type', 'neighbourhood',
+    'longitude', 'latitude', 'city'
     ]
 
 
