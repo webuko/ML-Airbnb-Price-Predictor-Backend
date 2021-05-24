@@ -14,7 +14,7 @@ def create_app():
     # set configs for db
     db_username = os.getenv('DB_USERNAME')
     db_password = os.getenv('DB_PASSWORD')
-    db_name = os.getenv('DB_NAME')  
+    db_name = os.getenv('DB_NAME')
     app.config['MONGO_URI'] = f'mongodb://{db_username}:{db_password}@mongodb:27017/{db_name}'
     # init extensions
     from flaskr.db import mongo
