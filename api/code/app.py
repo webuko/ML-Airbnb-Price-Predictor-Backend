@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, request, abort, make_response
 from flask_cors import CORS, cross_origin
 from flaskr.model import get_prediction, validate_prediction_request, allowed_prediction_features
@@ -7,7 +9,6 @@ from pymongo import MongoClient
 
 from json import dumps as json_dumps
 from bson.json_util import dumps as bson_dumps
-
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {'origins': '*'}})
@@ -25,15 +26,14 @@ db = client[db_name]
 
 @app.route('/api/allListings', methods=['GET', 'POST'])
 @cross_origin(methods=['GET', 'POST'])
-def all_linstings():
+def all_listings():
     keys_filter, keys_projection = filter_listings(request)
-    
     json_data = bson_dumps(db.listings.find(keys_filter, keys_projection))
-
     response = make_response(json_data, 200)
     response.headers['Content-type'] = 'application/json'
 
     return response
+
 
 @app.route('/api/filterListings', methods=['POST'])
 @cross_origin(methods=['POST'])
@@ -100,12 +100,12 @@ def price_prediction():
 
         response = make_response(json_data, 200)
         response.headers['Content-type'] = 'application/json'
-    
+
         return response
-    
+
     abort(500, 'Internal server error. Please try again later')
 
-    
+
 @app.route('/api/pricePredictionParamValues', methods=['GET'])
 @cross_origin(methods=['GET'])
 def price_prediction_param_values():
