@@ -1,5 +1,7 @@
 flask
 flask-cors
 pymongo
-requests
+Flask-PyMongo
 sklearn
+requests
+waitress
