@@ -1,17 +1,13 @@
 from flask import abort
-from bson.json_util import dumps
-
-
-def to_json(data):
-    return dumps(data)
 
 
 DEFAULT_RETURN_KEYS = [
     'id', 'name', 'description', 'price',
-    'picture_url', 'bedrooms', 'bathrooms',
-    'accommodates', 'property_type', 'room_type',
-    'neighbourhood', 'longitude', 'latitude',
-]
+    'host_name', 'host_picture_url', 'picture_url',
+    'bedrooms', 'bathrooms','bedrooms', 'accommodates',
+    'property_type', 'room_type', 'neighbourhood',
+    'longitude', 'latitude', 'city'
+    ]
 
 
 def filter_listings(request, force_GET=False):

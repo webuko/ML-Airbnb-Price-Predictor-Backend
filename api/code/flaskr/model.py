@@ -42,7 +42,7 @@ def encoder_classes(encoder):
         encoder = pickle.load(open(f'{PRICE_PREDICTOR_ENCODER_LOCATION}{encoder}_encoder.pickle', 'rb'))
     except:
         return False
-    return encoder.classes_
+    return encoder.classes_.tolist()
 
 
 def validate_prediction_request(request):
@@ -86,3 +86,14 @@ def get_prediction(instances):
         return str(json.loads(request.text)['predictions'][0][0])
     else:
         return str(request.text)
+
+
+def allowed_prediction_features():
+    features = {}
+    for field, (t, vals) in NECESSARY_FIELDS.items():
+        if t != 'encode':
+            features[field] = {'type': t, 'values': vals}
+        else:
+            encoder_vals = encoder_classes(field)
+            features[field] = {'type': 'string', 'values': encoder_vals}
+    return features

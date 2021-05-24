@@ -1,8 +1,7 @@
-import pytest
 import sys
 from pathlib import Path
+
 from flask import Flask, request
-import random
 
 parent = Path(__file__).resolve().parents[1]
 sys.path.append(str(parent) + '/code/flaskr/')
@@ -10,9 +9,12 @@ import model
 
 model.PRICE_PREDICTOR_ENCODER_LOCATION = str(parent) + '/code/encoders/airbnb_price_net/1/'
 
-"""Contains tests regarding the encoders that are used for some features needed in price prediction. The block just 
-below tests whether all necessary encoders can be loaded."""
+import random
+import pytest
 
+
+# Contains tests regarding the encoders that are used for some features needed in price prediction. The block just
+# below tests whether all necessary encoders can be loaded.
 
 def test_neighbourhood_encoder_available():
     assert model.encoder_classes('neighbourhood') is not False
@@ -25,6 +27,9 @@ def test_property_type_encoder_available():
 def test_room_type_encoder_available():
     assert model.encoder_classes('room_type') is not False
 
+
+# Following tests should make sure that values are correctly encoded and, in the case of an invalid value,
+# no encoding is done.
 
 def test_neighbourhood_valid_example():
     """
@@ -81,8 +86,8 @@ def test_model_input_validation_all_fields_submitted(flask_app, valid_model_inpu
     with flask_app.test_request_context(data=valid_model_input):
         validated = model.validate_prediction_request(request)
         print(validated)
-        assert ('error' in validated and
-                validated['error']['msg'] == 'Make sure all required fields are submitted') is not True
+        assert ('error' in validated and validated['error'][
+            'msg'] == 'Make sure all required fields are submitted') is not True
 
 
 def test_model_input_validation_valid_response(flask_app, valid_model_input):

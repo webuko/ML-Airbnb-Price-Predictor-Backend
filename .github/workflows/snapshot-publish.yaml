@@ -2,8 +2,8 @@ name: snapshot-publish
 
 on:
   push:
-    branches-ignore:
-      - main
+    branches:
+      - develop
 
 jobs:
   api:
