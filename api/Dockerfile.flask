@@ -1,12 +1,20 @@
 FROM python:3.7-slim-buster
-WORKDIR /code
+
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 # remove when in production
 ENV FLASK_ENV=development
+
+# variables for accessing the db
+# when in production --> use secrets
+ENV DB_NAME=airbnb
+ENV DB_USERNAME=airbnb-user
+ENV DB_PASSWORD=pass
+
 #RUN apk add --no-cache gcc musl-dev linux-headers
+
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
-EXPOSE 5000
-COPY . .
+COPY code /code/
+WORKDIR /code
 CMD ["flask", "run"]

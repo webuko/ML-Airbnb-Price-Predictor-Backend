@@ -12,11 +12,15 @@ from bson.json_util import dumps as bson_dumps
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {'origins': '*'}})
 
+# import database credentials from environment
+db_username = os.getenv('DB_USERNAME')
+db_password = os.getenv('DB_PASSWORD')
+db_name = os.getenv('DB_NAME')
 client = MongoClient(host='mongodb',
-    username='airbnb-user',
-    password='pass',
-    authSource='airbnb')
-db = client['airbnb']
+                     username=db_username,
+                     password=db_password,
+                     authSource=db_name)
+db = client[db_name]
 
 
 @app.route('/api/allListings', methods=['GET', 'POST'])
@@ -31,7 +35,6 @@ def all_linstings():
 
     return response
 
-
 @app.route('/api/filterListings', methods=['POST'])
 @cross_origin(methods=['POST'])
 def filtered_listings():
@@ -39,13 +42,13 @@ def filtered_listings():
     filter = {}
 
     allowed_criteria = {
-       'price': 'num',
-       'bedrooms': 'num',
-       'bathrooms': 'num',
-       'accommodates': 'num',
-       'property_type': 'str',
-       'room_type': 'str',
-       'neighbourhood': 'str'
+        'price': 'num',
+        'bedrooms': 'num',
+        'bathrooms': 'num',
+        'accommodates': 'num',
+        'property_type': 'str',
+        'room_type': 'str',
+        'neighbourhood': 'str'
     }
 
     if not request.json or not isinstance(request.json, dict):
@@ -61,13 +64,13 @@ def filtered_listings():
 
         if type == 'num':
             if not isinstance(el, list) or \
-                len(el) != 2 or \
-                (not str(el[0]).isdigit() or not str(el[1]).isdigit()):
+                    len(el) != 2 or \
+                    (not str(el[0]).isdigit() or not str(el[1]).isdigit()):
                 abort(400, abort_msg)
             filter[criteria] = {'$gte': el[0], '$lte': el[1]}
         else:
             if not isinstance(el, list) or \
-                len([e for e in el if str(e).isdigit()]) > 0:
+                    len([e for e in el if str(e).isdigit()]) > 0:
                 abort(400, abort_msg)
             filter[criteria] = {'$in': el}
 
@@ -102,7 +105,7 @@ def price_prediction():
     
     abort(500, 'Internal server error. Please try again later')
 
-
+    
 @app.route('/api/pricePredictionParamValues', methods=['GET'])
 @cross_origin(methods=['GET'])
 def price_prediction_param_values():

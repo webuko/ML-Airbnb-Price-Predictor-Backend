@@ -23,8 +23,16 @@ services:
   mongodb:
     build:
       context: ./db
-      dockerfile: .
+      dockerfile: Dockerfile.db
     ports:
       - 27017:27017
     volumes:
       - ./db_data/:/data/db # to make db persistent
+
+  mongo_seed:
+    build:
+      context: ./db
+      dockerfile: Dockerfile.seed
+    depends_on:
+      - mongodb
+    restart: on-failure
