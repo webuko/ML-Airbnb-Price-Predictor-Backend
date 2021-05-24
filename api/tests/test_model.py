@@ -13,8 +13,10 @@ import random
 import pytest
 
 
-# Contains tests regarding the encoders that are used for some features needed in price prediction. The block just
-# below tests whether all necessary encoders can be loaded.
+'''
+Contains tests regarding the encoders that are used for some features needed in price prediction. The block just
+below tests whether all necessary encoders can be loaded.
+'''
 
 def test_neighbourhood_encoder_available():
     assert model.encoder_classes('neighbourhood') is not False
@@ -28,13 +30,12 @@ def test_room_type_encoder_available():
     assert model.encoder_classes('room_type') is not False
 
 
-# Following tests should make sure that values are correctly encoded and, in the case of an invalid value,
-# no encoding is done.
+'''
+Following tests should make sure that values are correctly encoded and, in the case of an invalid value,
+no encoding is done.
+'''
 
 def test_neighbourhood_valid_example():
-    """
-    Tests to make sure that values are correctly encoded and, in the case of an invalid value, no encoding is done.
-    """
     example = model.encoder_classes('neighbourhood')[0]
     assert 'encoded' in model.load_encoder_and_transform('neighbourhood', example)
 

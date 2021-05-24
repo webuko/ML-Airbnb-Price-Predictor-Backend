@@ -2,8 +2,11 @@ version: "3.7"
 services:
   flaskapi:
     image: webuko/api:snapshot
+    environment:
+      - FLASK_ENV=production
     ports:
       - 5000:5000
+    command: waitress-serve --host 0.0.0.0 --port 5000 --call flaskr:create_app
 
   mongodb:
     image: webuko/db:snapshot

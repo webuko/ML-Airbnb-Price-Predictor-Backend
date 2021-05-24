@@ -1,6 +1,6 @@
 FROM python:3.7-slim-buster
 
-ENV FLASK_APP=app.py
+ENV FLASK_APP=flaskr:create_app
 ENV FLASK_RUN_HOST=0.0.0.0
 # remove when in production
 ENV FLASK_ENV=development

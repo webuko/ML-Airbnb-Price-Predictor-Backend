@@ -1,41 +1,32 @@
 import os
 
-from flask import Flask, request, abort, make_response
+from flask import Blueprint, request, abort, make_response
 from flask_cors import CORS, cross_origin
 from flaskr.model import get_prediction, validate_prediction_request, allowed_prediction_features
 from flaskr.request_helper import filter_listings
-
-from pymongo import MongoClient
+from flaskr.db import mongo
 
 from json import dumps as json_dumps
 from bson.json_util import dumps as bson_dumps
 
-app = Flask(__name__)
-cors = CORS(app, resources={r"/api/*": {'origins': '*'}})
 
-# import database credentials from environment
-db_username = os.getenv('DB_USERNAME')
-db_password = os.getenv('DB_PASSWORD')
-db_name = os.getenv('DB_NAME')
-client = MongoClient(host='mongodb',
-                     username=db_username,
-                     password=db_password,
-                     authSource=db_name)
-db = client[db_name]
+api_bp = Blueprint('api', __name__)
 
+# enable cors compatibility
+CORS(api_bp, resources={r"/api/*": {'origins': '*'}})
 
-@app.route('/api/allListings', methods=['GET', 'POST'])
+@api_bp.route('/api/allListings', methods=['GET', 'POST'])
 @cross_origin(methods=['GET', 'POST'])
 def all_listings():
     keys_filter, keys_projection = filter_listings(request)
-    json_data = bson_dumps(db.listings.find(keys_filter, keys_projection))
+    json_data = bson_dumps(mongo.db.listings.find(keys_filter, keys_projection))
     response = make_response(json_data, 200)
     response.headers['Content-type'] = 'application/json'
 
     return response
 
 
-@app.route('/api/filterListings', methods=['POST'])
+@api_bp.route('/api/filterListings', methods=['POST'])
 @cross_origin(methods=['POST'])
 def filtered_listings():
     abort_msg = 'filter criteria is not correctly provided'
@@ -77,7 +68,7 @@ def filtered_listings():
     force_GET = request.json.get('fields') is None
     _, keys_projection = filter_listings(request, force_GET)
 
-    json_data = bson_dumps(db.listings.find(filter, keys_projection))
+    json_data = bson_dumps(mongo.db.listings.find(filter, keys_projection))
 
     response = make_response(json_data, 200)
     response.headers['Allow'] = 'POST'
@@ -86,7 +77,7 @@ def filtered_listings():
     return response
 
 
-@app.route('/api/pricePrediction', methods=['POST'])
+@api_bp.route('/api/pricePrediction', methods=['POST'])
 @cross_origin(methods=['POST'])
 def price_prediction():
     validated_request = validate_prediction_request(request)
@@ -106,7 +97,7 @@ def price_prediction():
     abort(500, 'Internal server error. Please try again later')
 
 
-@app.route('/api/pricePredictionParamValues', methods=['GET'])
+@api_bp.route('/api/pricePredictionParamValues', methods=['GET'])
 @cross_origin(methods=['GET'])
 def price_prediction_param_values():
     param_values = allowed_prediction_features()
@@ -116,7 +107,3 @@ def price_prediction_param_values():
     response.headers['Content-Type'] = 'application/json'
 
     return response
-
-
-if __name__ == '__main__':
-    app.run()

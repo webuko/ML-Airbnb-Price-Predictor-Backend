@@ -28,7 +28,7 @@ NECESSARY_FIELDS = OrderedDict([
 def load_encoder_and_transform(encoder, val):
     try:
         encoder = pickle.load(open(f'{PRICE_PREDICTOR_ENCODER_LOCATION}{encoder}_encoder.pickle', 'rb'))
-    except:
+    except FileNotFoundError:
         return {'error': {'code': 500, 'msg': 'Internal server error. Please try again later'}}
 
     if val not in encoder.classes_:
@@ -40,7 +40,7 @@ def load_encoder_and_transform(encoder, val):
 def encoder_classes(encoder):
     try:
         encoder = pickle.load(open(f'{PRICE_PREDICTOR_ENCODER_LOCATION}{encoder}_encoder.pickle', 'rb'))
-    except:
+    except FileNotFoundError:
         return False
     return encoder.classes_.tolist()
 
