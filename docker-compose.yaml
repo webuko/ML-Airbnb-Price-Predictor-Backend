@@ -33,6 +33,6 @@ services:
     build:
       context: ./db
       dockerfile: Dockerfile.seed
-    depends_on: 
+    depends_on:
       - mongodb
     restart: on-failure

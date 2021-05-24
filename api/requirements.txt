@@ -1,4 +1,4 @@
 flask
 pymongo
-tensorflow
 sklearn
+requests

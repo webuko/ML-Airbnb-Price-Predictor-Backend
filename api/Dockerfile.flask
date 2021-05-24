@@ -1,7 +1,5 @@
 FROM python:3.7-slim-buster
 
-WORKDIR /code
-
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 # remove when in production
@@ -17,5 +15,6 @@ ENV DB_PASSWORD=pass
 
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
-COPY . .
-CMD flask run
+COPY code /code/
+WORKDIR /code
+CMD ["flask", "run"]
