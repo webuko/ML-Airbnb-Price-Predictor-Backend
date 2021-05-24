@@ -37,6 +37,7 @@ jobs:
         run: echo ${{ steps.docker_build.outputs.digest }}
 
   db:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
@@ -65,6 +66,7 @@ jobs:
         run: echo ${{ steps.docker_build.outputs.digest }}
 
   db-seed:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
@@ -93,6 +95,7 @@ jobs:
         run: echo ${{ steps.docker_build.outputs.digest }}
 
   tf:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
