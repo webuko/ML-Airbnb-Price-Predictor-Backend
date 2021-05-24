@@ -96,5 +96,4 @@ def allowed_prediction_features():
         else:
             encoder_vals = encoder_classes(field)
             features[field] = {'type': 'string', 'values': encoder_vals}
-    
     return features
