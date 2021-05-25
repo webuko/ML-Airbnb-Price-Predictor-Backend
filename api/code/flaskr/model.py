@@ -3,14 +3,17 @@ import requests
 import pickle
 from collections import OrderedDict
 
+
 # url for accessing price prediction micro service
 PRICE_PREDICTOR_URL = "http://tensorflow-serving:8501/v1/models/price_predictor:predict"
 # model (and version) to use
 PRICE_PREDICTOR_ENCODER_LOCATION = "encoders/airbnb_price_net/1/"
 
-# This ordered dict stores all necessary fields for the price prediction.
-# Note that it's an ordered dict and the order corresponds to the order of the feature list that must be provided to
-# the prediction model.
+"""
+This ordered dict stores all necessary fields for the price prediction.
+Note that it's an ordered dict and the order corresponds to the order of the feature list that must be provided to
+the prediction model.
+"""
 NECESSARY_FIELDS = OrderedDict([
     ('bathrooms', ('num', [0, 100])),
     ('bedrooms', ('num', [0, 100])),
@@ -26,6 +29,17 @@ NECESSARY_FIELDS = OrderedDict([
 
 
 def load_encoder_and_transform(encoder, val):
+    """ loads an encoder and then encodes the given value
+
+    :param encoder: the name of the decoder that should be used
+    :type: string
+    :param val: the value that should be encoded
+    :type: string
+
+    :returns: a dictionary containing the encoded value (error and error msg in case of an error)
+    :rtype: dict
+    """
+
     try:
         encoder = pickle.load(open(f'{PRICE_PREDICTOR_ENCODER_LOCATION}{encoder}_encoder.pickle', 'rb'))
     except FileNotFoundError:
@@ -38,6 +52,15 @@ def load_encoder_and_transform(encoder, val):
 
 
 def encoder_classes(encoder):
+    """ Get possible encoder values for a given encoder.
+
+    :param encoder: the name of the decoder that should be used
+    :type: string
+
+    :returns: a list containing the possible encoder values
+    :rtype: list
+    """
+
     try:
         encoder = pickle.load(open(f'{PRICE_PREDICTOR_ENCODER_LOCATION}{encoder}_encoder.pickle', 'rb'))
     except FileNotFoundError:
@@ -46,10 +69,15 @@ def encoder_classes(encoder):
 
 
 def validate_prediction_request(request):
+    """ Validate and process a price prediction request.
+    
+    :param request: the request object sent by the user
+    :type: flask.request
+
+    :returns: a dictionary containing the processed request (error and error msg in case of an error)
+    :rtype: dict
     """
-    This function validates the post data sent for a price prediction request.
-    The function returns a dict.
-    """
+
     features = []
 
     for field, (t, vals) in NECESSARY_FIELDS.items():
@@ -77,7 +105,15 @@ def validate_prediction_request(request):
 
 
 def get_prediction(instances):
-    # format correctly
+    """ Send a processed request to the prediction microservice.
+    
+    :param instances: a list containing the features in the needed format for the prediction model
+    :type: list
+
+    :returns: the prediction
+    :rtype: str
+    """
+    
     request_data = json.dumps(instances)
 
     request = requests.post(PRICE_PREDICTOR_URL, request_data)
@@ -89,6 +125,12 @@ def get_prediction(instances):
 
 
 def allowed_prediction_features():
+    """ Send a processed request to the prediction microservice.
+
+    :returns: the necessary fields along with the type and allowed values
+    :rtype: dict
+    """
+    
     features = {}
     for field, (t, vals) in NECESSARY_FIELDS.items():
         if t != 'encode':
