@@ -13,10 +13,10 @@ from bson.json_util import dumps as bson_dumps
 api_bp = Blueprint('api', __name__)
 
 # enable cors compatibility
-CORS(api_bp, resources={r"/api/*": {'origins': '*'}})
+CORS(api_bp)
 
 @api_bp.route('/api/allListings', methods=['GET', 'POST'])
-@cross_origin(methods=['GET', 'POST'])
+@cross_origin(origins='*', methods=['GET', 'POST'])
 def all_listings():
     keys_filter, keys_projection = filter_listings(request)
     json_data = bson_dumps(mongo.db.listings.find(keys_filter, keys_projection))
@@ -27,7 +27,7 @@ def all_listings():
 
 
 @api_bp.route('/api/filterListings', methods=['POST'])
-@cross_origin(methods=['POST'])
+@cross_origin(origins='*', methods=['POST'])
 def filtered_listings():
     abort_msg = 'filter criteria is not correctly provided'
     filter = {}
@@ -71,14 +71,13 @@ def filtered_listings():
     json_data = bson_dumps(mongo.db.listings.find(filter, keys_projection))
 
     response = make_response(json_data, 200)
-    response.headers['Allow'] = 'POST'
     response.headers['Content-type'] = 'application/json'
 
     return response
 
 
 @api_bp.route('/api/pricePrediction', methods=['POST'])
-@cross_origin(methods=['POST'])
+@cross_origin(origins='*', methods=['POST'])
 def price_prediction():
     validated_request = validate_prediction_request(request)
 
@@ -98,7 +97,7 @@ def price_prediction():
 
 
 @api_bp.route('/api/pricePredictionParamValues', methods=['GET'])
-@cross_origin(methods=['GET'])
+@cross_origin(origins='*', methods=['GET'])
 def price_prediction_param_values():
     param_values = allowed_prediction_features()
     json_data = json_dumps(param_values)
