@@ -1,6 +1,7 @@
 from flask import abort
 
 
+# this constant defines the default keys that are retrieved from the db
 DEFAULT_RETURN_KEYS = [
     'id', 'name', 'description', 'price',
     'host_name', 'host_picture_url', 'picture_url',
@@ -11,6 +12,17 @@ DEFAULT_RETURN_KEYS = [
 
 
 def filter_listings(request, force_GET=False):
+    """ loads an encoder and then encodes the given value
+
+    :param request: the request object sent by the user
+    :type: flask.request
+    :param force_GET: allows to retrieve default filter and projection keys in case of a POST request
+    :type: boolean, optional
+
+    :returns: a tuple containing the filter and projection keys used to retrieve data
+    :rtype: tuple
+    """
+
     if request.method == 'POST' and not force_GET:
         if not request.json.get('fields'):
             abort(400, 'fields parameter missing')
