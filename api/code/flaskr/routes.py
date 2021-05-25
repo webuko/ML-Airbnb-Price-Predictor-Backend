@@ -1,5 +1,3 @@
-import os
-
 from flask import Blueprint, request, abort, make_response
 from flask_cors import CORS, cross_origin
 from flaskr.model import get_prediction, validate_prediction_request, allowed_prediction_features
@@ -30,7 +28,7 @@ def all_listings():
 @cross_origin(origins='*', methods=['POST'])
 def filtered_listings():
     abort_msg = 'filter criteria is not correctly provided'
-    filter = {}
+    keys_filter = {}
 
     allowed_criteria = {
         'price': 'num',
@@ -48,27 +46,27 @@ def filtered_listings():
     if not 'criteria' in request.json:
         abort(400, 'criteria parameter missing')
 
-    for criteria, type in allowed_criteria.items():
+    for criteria, t in allowed_criteria.items():
         el = request.json['criteria'].get(criteria, None)
         if not el:
             continue
 
-        if type == 'num':
+        if t == 'num':
             if not isinstance(el, list) or \
                     len(el) != 2 or \
                     (not str(el[0]).isdigit() or not str(el[1]).isdigit()):
                 abort(400, abort_msg)
-            filter[criteria] = {'$gte': el[0], '$lte': el[1]}
+            keys_filter[criteria] = {'$gte': el[0], '$lte': el[1]}
         else:
             if not isinstance(el, list) or \
                     len([e for e in el if str(e).isdigit()]) > 0:
                 abort(400, abort_msg)
-            filter[criteria] = {'$in': el}
+            keys_filter[criteria] = {'$in': el}
 
     force_GET = request.json.get('fields') is None
     _, keys_projection = filter_listings(request, force_GET)
 
-    json_data = bson_dumps(mongo.db.listings.find(filter, keys_projection))
+    json_data = bson_dumps(mongo.db.listings.find(keys_filter, keys_projection))
 
     response = make_response(json_data, 200)
     response.headers['Content-type'] = 'application/json'
