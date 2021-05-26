@@ -1,0 +1,14 @@
+FROM mongo:4.4.6
+
+# when in production --> use secrets
+ENV MONGO_INITDB_ROOT_USERNAME root
+ENV MONGO_INITDB_ROOT_PASSWORD pass
+ENV MONGO_INITDB_DATABASE admin
+
+# this will add a script to create an user
+ADD create_user.js /docker-entrypoint-initdb.d/
+# and then overwrites the placeholder values for db name, user and password
+# when in production --> use secrets
+RUN sed -i 's/db_name/airbnb/g' docker-entrypoint-initdb.d/create_user.js
+RUN sed -i 's/db_user/airbnb-user/g' docker-entrypoint-initdb.d/create_user.js
+RUN sed -i 's/db_password/pass/g' /docker-entrypoint-initdb.d/create_user.js

@@ -1,20 +1,38 @@
-version: "3.9"
+version: "3.7"
 services:
+  tensorflow-serving:
+    build: 
+      context: ./tensorflow
+      dockerfile: Dockerfile.tf
+    command:
+      - '--model_config_file=/models/model.config'
+    ports: 
+      - 8501:8501
+    depends_on: 
+      - flaskapi
+
   flaskapi:
     build:
       context: ./api
-      dockerfile: .
+      dockerfile: Dockerfile.flask
     ports:
       - 5000:5000
     volumes:
-      - ./api/code:/code # use only in development, allows for changes on the fly
+      - ./api/code:/code
 
-# todo: check how to handle a prefilled mongodb docker image
-  # mongodb:
-  #   build:
-  #     context: ./db
-  #     dockerfile: .
-  #   ports:
-  #     - 27017:27017
-  #   volumes:
-  #     - ./db_data/:/data/db # to make db persistent
+  mongodb:
+    build:
+      context: ./db
+      dockerfile: Dockerfile.db
+    ports:
+      - 27017:27017
+    volumes:
+      - ./db_data/:/data/db # to make db persistent
+
+  mongo_seed:
+    build:
+      context: ./db
+      dockerfile: Dockerfile.seed
+    depends_on:
+      - mongodb
+    restart: on-failure
