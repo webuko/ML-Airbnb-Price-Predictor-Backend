@@ -76,7 +76,7 @@ def valid_model_input():
         if t == 'num':
             data[field] = random.randint(vals[0], vals[1])
         elif t == 'binary':
-            data[field] = random.randint(0, 1)
+            data[field] = random.choice([True, False])
         else:
             data[field] = random.choice(model.encoder_classes(field))
 
