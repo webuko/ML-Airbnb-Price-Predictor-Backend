@@ -29,7 +29,7 @@ NECESSARY_FIELDS = OrderedDict([
 
 
 def load_encoder_and_transform(encoder, val):
-    """ loads an encoder and then encodes the given value
+    """Loads an encoder and then encodes the given value.
 
     :param encoder: the name of the decoder that should be used
     :type: string
@@ -52,7 +52,7 @@ def load_encoder_and_transform(encoder, val):
 
 
 def encoder_classes(encoder):
-    """ Get possible encoder values for a given encoder.
+    """Get possible encoder values for a given encoder.
 
     :param encoder: the name of the decoder that should be used
     :type: string
@@ -69,7 +69,7 @@ def encoder_classes(encoder):
 
 
 def validate_prediction_request(request):
-    """ Validate and process a price prediction request.
+    """Validate and process a price prediction request.
     
     :param request: the request object sent by the user
     :type: flask.request
@@ -105,7 +105,7 @@ def validate_prediction_request(request):
 
 
 def get_prediction(instances):
-    """ Send a processed request to the prediction microservice.
+    """Send a processed request to the prediction microservice.
     
     :param instances: a list containing the features in the needed format for the prediction model
     :type: list
@@ -125,7 +125,7 @@ def get_prediction(instances):
 
 
 def allowed_prediction_features():
-    """ Send a processed request to the prediction microservice.
+    """Send a processed request to the prediction microservice.
 
     :returns: the necessary fields along with the type and allowed values
     :rtype: dict

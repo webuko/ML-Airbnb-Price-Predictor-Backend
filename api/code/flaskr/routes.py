@@ -16,6 +16,12 @@ CORS(api_bp)
 @api_bp.route('/api/allListings', methods=['GET', 'POST'])
 @cross_origin(origins='*', methods=['GET', 'POST'])
 def all_listings():
+    """Endpoint for retrieving all listings.
+    
+    For an explanation on how to use the api check out our API documentation on github: 
+    https://github.com/webuko/backend/wiki/API-Documentation#alllistings
+    """
+
     keys_filter, keys_projection = filter_listings(request)
     json_data = bson_dumps(mongo.db.listings.find(keys_filter, keys_projection))
     response = make_response(json_data, 200)
@@ -27,6 +33,12 @@ def all_listings():
 @api_bp.route('/api/filterListings', methods=['POST'])
 @cross_origin(origins='*', methods=['POST'])
 def filtered_listings():
+    """Endpoint for retrieving filtering listings.
+        
+    For an explanation on how to use the api check out our API documentation on github: 
+    https://github.com/webuko/backend/wiki/API-Documentation#filterlistings
+    """
+
     abort_msg = 'filter criteria is not correctly provided'
     keys_filter = {}
 
@@ -77,6 +89,12 @@ def filtered_listings():
 @api_bp.route('/api/pricePrediction', methods=['POST'])
 @cross_origin(origins='*', methods=['POST'])
 def price_prediction():
+    """Endpoint for making a price prediction request.
+
+    For an explanation on how to use the api check out our API documentation on github: 
+    https://github.com/webuko/backend/wiki/API-Documentation#priceprediction
+    """
+
     validated_request = validate_prediction_request(request)
 
     if 'error' in validated_request:
@@ -97,6 +115,12 @@ def price_prediction():
 @api_bp.route('/api/pricePredictionParamValues', methods=['GET'])
 @cross_origin(origins='*', methods=['GET'])
 def price_prediction_param_values():
+    """Endpoint for retrieving the parameters necessary for a price prediction.
+
+    For an explanation on how to use the api check out our API documentation on github: 
+    https://github.com/webuko/backend/wiki/API-Documentation#pricepredictionparamvalues
+    """
+
     param_values = allowed_prediction_features()
     json_data = json_dumps(param_values)
 

@@ -12,7 +12,7 @@ DEFAULT_RETURN_KEYS = [
 
 
 def filter_listings(request, force_GET=False):
-    """ loads an encoder and then encodes the given value
+    """Loads an encoder and then encodes the given value
 
     :param request: the request object sent by the user
     :type: flask.request
