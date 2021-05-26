@@ -68,7 +68,7 @@ def validate_prediction_request(request):
                 el_parsed = json.loads(el)
             except json.decoder.JSONDecodeError:
                 return {'error': {'code': 400, 'msg': f'unallowed value for {field}'}}
-                
+
             if not isinstance(el_parsed, bool):
                 return {'error': {'code': 400, 'msg': f'unallowed value for {field}'}}
             features.append(int(el_parsed))
