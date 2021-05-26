@@ -29,3 +29,20 @@ The API aims to deliver the following functionalities:
 - get price predictions for a not yet published Airbnb listings
 
 As stated above, please consult the [Wiki](https://github.com/webuko/backend/wiki/API-Documentation) for a more detailed explanation. For an overview of the ongoing efforts to improve the functionalities, have a look at the [Issues](https://github.com/webuko/backend/issues) section in this repository.
+
+## How to run the API
+
+### Development environment
+
+If you want to use this API in a development environment, you can download this repository and use it with `docker-compose`. For this purpose, use the `docker-compose.yaml` in the root directory. This will start all micorservies and set the flask application to development modus. Additionally, a volume is shared with the host system so that code changes can be applied immediately.
+
+### Production environment
+
+If you want to use this API in a production environment, you can use the `dc-production`file with `docker-compose`. In this case, you can start the application with the following commands:
+- `docker-compose -f dc-production.yaml pull`
+
+  This will pull the necessary images from docker hub.
+
+- `docker-compose -f dc-production.yaml up`
+
+  And then start the application.
