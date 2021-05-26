@@ -11,6 +11,7 @@ model.PRICE_PREDICTOR_ENCODER_LOCATION = str(parent) + '/code/encoders/airbnb_pr
 
 import random
 import pytest
+import json
 
 
 '''
@@ -76,7 +77,7 @@ def valid_model_input():
         if t == 'num':
             data[field] = random.randint(vals[0], vals[1])
         elif t == 'binary':
-            data[field] = random.choice([True, False])
+            data[field] = random.choice([json.dumps(True), json.dumps(False)])
         else:
             data[field] = random.choice(model.encoder_classes(field))
 
@@ -86,7 +87,6 @@ def valid_model_input():
 def test_model_input_validation_all_fields_submitted(flask_app, valid_model_input):
     with flask_app.test_request_context(data=valid_model_input):
         validated = model.validate_prediction_request(request)
-        print(validated)
         assert ('error' in validated and validated['error'][
             'msg'] == 'Make sure all required fields are submitted') is not True
 
@@ -94,9 +94,10 @@ def test_model_input_validation_all_fields_submitted(flask_app, valid_model_inpu
 def test_model_input_validation_valid_response(flask_app, valid_model_input):
     with flask_app.test_request_context(data=valid_model_input):
         validated = model.validate_prediction_request(request)
+        print(validated)
         assert 'instances' in validated
 
-
+'''
 def test_get_prediction(response_mock):
     expected_response = '{\n' \
                         '   \"predictions\": [\n' \
@@ -107,3 +108,4 @@ def test_get_prediction(response_mock):
     with response_mock('POST ' + model.PRICE_PREDICTOR_URL + f' -> 200 :{expected_response}', bypass=False):
         p = model.get_prediction('anything')
         assert p == '42'
+'''
