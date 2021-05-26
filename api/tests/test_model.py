@@ -97,7 +97,6 @@ def test_model_input_validation_valid_response(flask_app, valid_model_input):
         print(validated)
         assert 'instances' in validated
 
-'''
 def test_get_prediction(response_mock):
     expected_response = '{\n' \
                         '   \"predictions\": [\n' \
@@ -108,4 +107,4 @@ def test_get_prediction(response_mock):
     with response_mock('POST ' + model.PRICE_PREDICTOR_URL + f' -> 200 :{expected_response}', bypass=False):
         p = model.get_prediction('anything')
         assert p == '42'
-'''
+
