@@ -98,8 +98,16 @@ def avg_price_neighbourhood():
             {
                 "_id":"$neighbourhood", 
                 "avgPrice": {"$avg":"$price"}
+            },
+        },
+        {   
+            "$project": 
+            {
+                "neighbourhood": "$_id",
+                "_id": 0,
+                "avgPrice": 1,
             }
-        }
+        },
     ]
 
     if request.method == 'POST' and request.json and request.json.get('criteria'):
@@ -110,7 +118,12 @@ def avg_price_neighbourhood():
             keys_filter = validated_request['keys_filter']
             pipeline.insert(0, {"$match": keys_filter})
 
-    json_data = bson_dumps(mongo.db.listings.aggregate(pipeline))
+    docs = list(mongo.db.listings.aggregate(pipeline))
+    max_val = max([doc['avgPrice'] for doc in docs])
+    for doc in docs:
+        doc['relAvgPrice'] = doc['avgPrice'] / max_val
+
+    json_data = bson_dumps(docs)
 
     response = make_response(json_data, 200)
     response.headers['Content-Type'] = 'application/json'
