@@ -16,9 +16,9 @@ NECESSARY_FIELDS = OrderedDict([
     ('bedrooms', ('num', [0, 100])),
     ('accommodates', ('num', [0, 100])),
     ('guests_included', ('num', [0, 100])),
-    ('gym', ('binary', [0, 1])),
-    ('ac', ('binary', [0, 1])),
-    ('elevator', ('binary', [0, 1])),
+    ('gym', ('binary', [True, False])),
+    ('ac', ('binary', [True, False])),
+    ('elevator', ('binary', [True, False])),
     ('neighbourhood', ('encode', None)),
     ('property_type', ('encode', None)),
     ('room_type', ('encode', None))
@@ -64,9 +64,14 @@ def validate_prediction_request(request):
             features.append(float(el))
 
         elif t == 'binary':
-            if not el.isdigit() or int(el) not in vals:
+            try:
+                el_parsed = json.loads(el)
+            except json.decoder.JSONDecodeError:
                 return {'error': {'code': 400, 'msg': f'unallowed value for {field}'}}
-            features.append(int(el))
+
+            if not isinstance(el_parsed, bool):
+                return {'error': {'code': 400, 'msg': f'unallowed value for {field}'}}
+            features.append(int(el_parsed))
         else:
             encoded = load_encoder_and_transform(field, el)
             if 'error' in encoded:
