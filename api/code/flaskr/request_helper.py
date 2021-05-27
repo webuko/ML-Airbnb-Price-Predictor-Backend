@@ -75,12 +75,12 @@ def validate_filter_request(request):
             if not isinstance(el, list) or \
                     len(el) != 2 or \
                     (not str(el[0]).isdigit() or not str(el[1]).isdigit()):
-                abort(400, abort_msg)
+                return {'error': {'code': 400, 'msg': abort_msg}}
             keys_filter[criteria] = {'$gte': el[0], '$lte': el[1]}
         else:
             if not isinstance(el, list) or \
                     len([e for e in el if str(e).isdigit()]) > 0:
-                abort(400, abort_msg)
+                return {'error': {'code': 400, 'msg': abort_msg}}
             keys_filter[criteria] = {'$in': el}
     
     return {'keys_filter': keys_filter}

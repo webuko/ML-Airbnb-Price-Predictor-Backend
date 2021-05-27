@@ -79,3 +79,62 @@ def test_project_listings_valid_request_fields_and_force_fields(flask_app):
     with flask_app.test_request_context(json=data, method='POST'):
         projected_request = request_helper.project_listings(request)
         assert ('keys_filter' in projected_request and 'keys_projection' in projected_request)
+
+def test_filtering_request_no_json_sent(flask_app):
+    """ Tests whether a filter request without json causes the correct error"""
+
+    with flask_app.test_request_context(method='POST'):
+        validated_request = request_helper.validate_filter_request(request)
+        assert ('error' in validated_request 
+        and validated_request['error']['msg'] == 'Request data must be transmitted as JSON object')
+
+def test_filtering_request_criteria_param_missing(flask_app):
+    """ Tests whether a filter request without required criteria param causes the correct error"""
+
+    data = {
+        'test': 0
+    }
+    with flask_app.test_request_context(method='POST', json=data):
+        validated_request = request_helper.validate_filter_request(request)
+        assert ('error' in validated_request 
+        and validated_request['error']['msg'] == 'criteria parameter missing')
+
+def test_filtering_request_numeric_field_wrong_type(flask_app):
+    """ Tests whether a filter request with a wrongly submitted numeric filter criteria causes the correct error"""
+
+    data = {
+        'criteria' : {
+            'price': 'test'
+        }
+    }
+    with flask_app.test_request_context(method='POST', json=data):
+        validated_request = request_helper.validate_filter_request(request)
+        assert ('error' in validated_request 
+        and validated_request['error']['msg'] == 'filter criteria is not correctly provided')
+
+def test_filtering_request_string_field_wrong_type(flask_app):
+    """ Tests whether a filter request with a wrongly submitted numeric filter criteria causes the correct error"""
+
+    data = {
+        'criteria' : {
+            'neighbourhood': [1, 2]
+        }
+    }
+    with flask_app.test_request_context(method='POST', json=data):
+        validated_request = request_helper.validate_filter_request(request)
+        assert ('error' in validated_request 
+        and validated_request['error']['msg'] == 'filter criteria is not correctly provided')
+
+def test_filtering_request_valid_response(flask_app):
+    """ Tests whether a correctly submitted filter request is validated"""
+
+    data = {
+        'criteria' : {
+            'price': [0, 100],
+            'neighbourhood': ['Mitte']
+        }
+    }
+    with flask_app.test_request_context(method='POST', json=data):
+        validated_request = request_helper.validate_filter_request(request)
+        assert 'keys_filter' in validated_request
+
