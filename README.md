@@ -13,20 +13,20 @@ The data used in this project comes from Airbnb. For the purpose of our project,
 ## Frameworks
 
 The following two frameworks are used in this project:
-- [Flask](https://flask.palletsprojects.com/en/2.0.x/)
+  - [Flask](https://flask.palletsprojects.com/en/2.0.x/)
 
-  Flask is used as Web API.
+    Flask is used as Web API.
 
-- [Tensorflow](https://www.tensorflow.org)
+  - [Tensorflow](https://www.tensorflow.org)
 
-  Tensorflow is used for the machine learning components in this project.
+    Tensorflow is used for the machine learning components in this project.
   
 ## API
 
 The API aims to deliver the following functionalities:
-- retrieve data for Airbnb listings in Berlin
-- not only retrieve data but filter data (e.g. for price ranges or a specific neighbourhood)
-- get price predictions for a not yet published Airbnb listings
+  - retrieve data for Airbnb listings in Berlin
+  - not only retrieve data but filter data (e.g. for price ranges or a specific neighbourhood)
+  - get price predictions for a not yet published Airbnb listings
 
 As stated above, please consult the [Wiki](https://github.com/webuko/backend/wiki/API-Documentation) for a more detailed explanation. For an overview of the ongoing efforts to improve the functionalities, have a look at the [Issues](https://github.com/webuko/backend/issues) section in this repository.
 
@@ -39,10 +39,10 @@ If you want to use this API in a development environment, you can download this 
 ### Production environment
 
 If you want to use this API in a production environment, you can use the `dc-production`file with `docker-compose`. In this case, you can start the application with the following commands:
-- `docker-compose -f dc-production.yaml pull`
+  - `docker-compose -f dc-production.yaml pull`
 
-  This will pull the necessary images from docker hub.
+    This will pull the necessary images from docker hub.
 
-- `docker-compose -f dc-production.yaml up`
+  - `docker-compose -f dc-production.yaml up`
 
-  And then start the application.
+    And then start the application.
