@@ -96,7 +96,7 @@ def avg_price_neighbourhood():
         {
             "$group": 
             {
-                "_id":"$neighbourhood", 
+                "_id":"$neighbourhood_cleansed", 
                 "avgPrice": {"$avg":"$price"}
             },
         },
@@ -121,8 +121,14 @@ def avg_price_neighbourhood():
     docs = list(mongo.db.listings.aggregate(pipeline))
     max_val = max([doc['avgPrice'] for doc in docs])
     for doc in docs:
+        # assing max value
         doc['relAvgPrice'] = doc['avgPrice'] / max_val
-
+        # and get geojson
+        geo = mongo.db.neighbourhood_geo.find_one({'properties.neighbourhood': doc['neighbourhood']})
+        if geo:
+            geo = geo.get('geometry', None)
+        doc['geometry'] = geo
+        
     json_data = bson_dumps(docs)
 
     response = make_response(json_data, 200)
