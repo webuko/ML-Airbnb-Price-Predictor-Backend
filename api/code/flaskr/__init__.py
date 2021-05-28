@@ -1,6 +1,7 @@
 """This module contains all the code that is used to make this api work."""
 
 from flask import Flask
+from flasgger import Swagger
 import os
 
 def create_app():
@@ -14,6 +15,7 @@ def create_app():
     """
 
     app = Flask(__name__)
+    Swagger(app, template_file="swagger.yaml")
 
     # set configs for db
     db_username = os.getenv('DB_USERNAME')
