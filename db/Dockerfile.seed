@@ -1,7 +1,8 @@
 FROM mongo:4.4.6
 
-COPY seed_data_1.json /seed_data_1.json
-COPY seed_data_2.json /seed_data_2.json
+COPY listings_seed_1.json /listings_seed_1.json
+COPY listings_seed_2.json /listings_seed_2.json
+COPY geo_seed.geojson /geo_seed.geojson
 
 # when in production --> use secrets
 COPY import_data.sh /

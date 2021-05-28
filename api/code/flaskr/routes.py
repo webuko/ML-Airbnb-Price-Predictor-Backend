@@ -113,13 +113,17 @@ def price_prediction_param_values():
 @api_bp.route('/api/avgPricePerNeighbourhood', methods=['GET', 'POST'])
 @cross_origin(origins='*', methods=['GET', 'POST'])
 def avg_price_neighbourhood():
+    """Endpoint for retrieving the average price per neighbourhood (including geojson data).
+        For an explanation on how to use the api check out our API documentation on github:
+        https://github.com/webuko/backend/wiki/API-Documentation#avgpriceperneighbourhood
+    """
 
     pipeline = [
         {
             "$group":
             {
-                "_id":"$neighbourhood",
-                "avgPrice": {"$avg":"$price"}
+                "_id": "$neighbourhood_cleansed",
+                "avgPrice": {"$avg": "$price"}
             },
         },
         {
@@ -143,7 +147,13 @@ def avg_price_neighbourhood():
     docs = list(mongo.db.listings.aggregate(pipeline))
     max_val = max([doc['avgPrice'] for doc in docs])
     for doc in docs:
+        # assign max value
         doc['relAvgPrice'] = doc['avgPrice'] / max_val
+        # get geojson
+        geo = mongo.db.neighbourhood_geo.find_one({'properties.neighbourhood': doc['neighbourhood']})
+        if geo:
+            geo = geo.get('geometry', None)
+        doc['geometry'] = geo
 
     json_data = bson_dumps(docs)
 
