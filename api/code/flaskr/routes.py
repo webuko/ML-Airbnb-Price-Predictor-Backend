@@ -91,6 +91,10 @@ def price_prediction_param_values():
 @api_bp.route('/api/avgPricePerNeighbourhood', methods=['GET', 'POST'])
 @cross_origin(origins='*', methods=['GET', 'POST'])
 def avg_price_neighbourhood():
+    """Endpoint for retrieving the average price per neighbourhood (including geojson data).
+        For an explanation on how to use the api check out our API documentation on github:
+        https://github.com/webuko/backend/wiki/API-Documentation#alllistings
+    """
 
     pipeline = [
         {
