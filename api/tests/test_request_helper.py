@@ -44,7 +44,7 @@ def test_project_listings_force_fields_wrong_type(flask_app):
     }
     with flask_app.test_request_context(json=data, method='POST'):
         projected_request = request_helper.project_listings(request)
-        assert ('error' in projected_request 
+        assert ('error' in projected_request
         and projected_request['error']['msg'] == 'force_field parameter must be provided as bool')
 
 def test_project_listings_fields_wrong_type(flask_app):
@@ -95,7 +95,7 @@ def test_filtering_request_criteria_param_missing(flask_app):
     }
     with flask_app.test_request_context(method='POST', json=data):
         validated_request = request_helper.validate_filter_request(request)
-        assert ('error' in validated_request 
+        assert ('error' in validated_request
         and validated_request['error']['msg'] == 'criteria parameter missing')
 
 def test_filtering_request_numeric_field_wrong_type(flask_app):

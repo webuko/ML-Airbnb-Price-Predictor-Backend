@@ -49,7 +49,7 @@ If you want to use this API in a development environment, you can clone this rep
 flask application to development mode. Additionally, a volume is shared with the host system so that code changes can be
 applied immediately.
 
-```
+```shell
 git clone https://github.com/webuko/backend.git
 cd backend
 docker-compose up
@@ -60,7 +60,7 @@ docker-compose up
 If you want to use this API in a production environment, you can use the file `dc-production.yaml` with
 `docker-compose`. You can pull the images and then start the containers with the following commands:
 
-```
+```shell
 docker-compose -f dc-production.yaml pull
 docker-compose -f dc-production.yaml up
 ```

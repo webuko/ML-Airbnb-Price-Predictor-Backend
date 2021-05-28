@@ -118,7 +118,7 @@ def avg_price_neighbourhood():
             validated_request = validate_filter_request(request)
             if 'error' in validated_request:
                 abort(validated_request['error']['code'], validated_request['error']['msg'])
-    
+
             keys_filter = validated_request['keys_filter']
             pipeline.insert(0, {"$match": keys_filter})
 

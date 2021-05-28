@@ -1,6 +1,3 @@
-from flask import abort
-
-
 DEFAULT_RETURN_KEYS = [
     'id', 'name', 'description', 'price',
     'host_name', 'host_picture_url', 'picture_url',
