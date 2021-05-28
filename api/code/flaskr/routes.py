@@ -1,5 +1,3 @@
-import os
-
 from flask import Blueprint, request, abort, make_response
 from flask_cors import CORS, cross_origin
 from flaskr.model import get_prediction, validate_prediction_request, allowed_prediction_features
@@ -18,6 +16,12 @@ CORS(api_bp)
 @api_bp.route('/api/allListings', methods=['GET', 'POST'])
 @cross_origin(origins='*', methods=['GET', 'POST'])
 def all_listings():
+    """Endpoint for retrieving all listings.
+
+        For an explanation on how to use the api check out our API documentation on github:
+        https://github.com/webuko/backend/wiki/API-Documentation#alllistings
+    """
+
     projected_request = project_listings(request)
     if 'error' in projected_request:
         abort(projected_request['error']['code'], projected_request['error']['msg'])
@@ -35,6 +39,12 @@ def all_listings():
 @api_bp.route('/api/filterListings', methods=['POST'])
 @cross_origin(origins='*', methods=['POST'])
 def filtered_listings():
+    """Endpoint for retrieving filtering listings.
+
+    For an explanation on how to use the api check out our API documentation on github:
+    https://github.com/webuko/backend/wiki/API-Documentation#filterlistings
+    """
+
     validated_request = validate_filter_request(request)
     if 'error' in validated_request:
          abort(validated_request['error']['code'], validated_request['error']['msg'])
@@ -59,6 +69,12 @@ def filtered_listings():
 @api_bp.route('/api/pricePrediction', methods=['POST'])
 @cross_origin(origins='*', methods=['POST'])
 def price_prediction():
+    """Endpoint for making a price prediction request.
+
+    For an explanation on how to use the api check out our API documentation on github:
+    https://github.com/webuko/backend/wiki/API-Documentation#priceprediction
+    """
+
     validated_request = validate_prediction_request(request)
 
     if 'error' in validated_request:
@@ -79,6 +95,12 @@ def price_prediction():
 @api_bp.route('/api/pricePredictionParamValues', methods=['GET'])
 @cross_origin(origins='*', methods=['GET'])
 def price_prediction_param_values():
+    """Endpoint for retrieving the parameters necessary for a price prediction.
+
+    For an explanation on how to use the api check out our API documentation on github:
+    https://github.com/webuko/backend/wiki/API-Documentation#pricepredictionparamvalues
+    """
+
     param_values = allowed_prediction_features()
     json_data = json_dumps(param_values)
 
