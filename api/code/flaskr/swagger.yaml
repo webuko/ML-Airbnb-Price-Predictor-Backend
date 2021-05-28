@@ -1,0 +1,204 @@
+swagger: '2.0'
+info:
+  description: 'This is the API documentation for the WeBuKo application.<br><br>All API methods can be called via `/api/method_name`. There is no authentication involved as all data and software in this project is open source. Data cannot be altered, only retrieved. API methods make use of the HTTP methods GET and POST. Where applicable, is specified below.'
+  version: 1.0.0
+  title: WeBuKo
+tags:
+  - name: allListings
+    description: Retrieve all available listings.
+  - name: filterListings
+    description: Retrieve filtered listings.
+  - name: pricePrediction
+    description: Get a price prediction.
+  - name: pricePredictionParamValues
+    description: Get the required parameters for executing a price prediction.
+schemes:
+  - https
+  - http
+paths:
+  /api/allListings:
+    get:
+      tags:
+        - allListings
+      summary: Get all listings with all available attributes.
+      description: ''
+      operationId: ''
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+    post:
+      tags:
+        - allListings
+      summary: Get all listings with specific attributes only.
+      description: ''
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: Specification
+          description: The specific values that are looked for in the requested listings.
+          required: true
+          schema:
+            $ref: "#/definitions/ListingSpecification"
+      responses:
+        '200':
+          description: Everything was okay.
+        '400':
+          description: Oops, something went wrong. Check the error message and make sure data is correctly submitted.
+  /api/filterListings:
+    post:
+      tags:
+        - filterListings
+      summary: Filter the listings according to the provided inputs.
+      description: The listings can be filtered according to the passed body as described below.
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: Filter
+          description: The filter specification can contain any combination of the specified example arrays as seen below. Every entry in the request body is optional. Note that all numeric arrays in the request body must have exactly length **2**. The first position denotes the lower bound and the second position corresponds to the upper bound (both including).
+          required: true
+          schema:
+            $ref: "#/definitions/FilterSpecification"
+      responses:
+        '200':
+          description: Everything was okay.
+        '400':
+          description: Oops, something went wrong. Check the error message and make sure data is correctly submitted.
+  /api/pricePrediction:
+    post:
+      tags:
+        - pricePrediction
+      summary: Gets a price estimation for a potential not yet listed AirBnB accommodation based on the specified characteristics.
+      description: The specified fields are fed into a machine learning model that outputs an estimated price that could be offered when adding such an accommodation to AirBnB.
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: PredictionBody
+          description: a
+          required: true
+          schema:
+            $ref: "#/definitions/PredictionBody"
+      responses:
+        '200':
+          description: Successful operation
+  /api/pricePredictionParamValues:
+    get:
+      tags:
+        - pricePredictionParamValues
+      summary: Retrieve `pricePrediction` API request parameters.
+      description: Retrieve valid values for the parameters of the `pricePrediction` API request.
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid status value
+definitions:
+  ListingSpecification:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name:
+        type: "string"
+      description:
+        type: "string"
+      price:
+        type: "number"
+      picture_url:
+        type: "string"
+      bedrooms:
+        type: "integer"
+      bathrooms:
+        type: "integer"
+      accommodates:
+        type: "integer"
+      property_type:
+        type: "string"
+      neighbourhood:
+        type: "string"
+      longitude:
+        type: "string"
+      latitude:
+        type: "string"
+    xml:
+      name: "ListingSpecification"
+  FilterSpecification:
+    type: "object"
+    properties:
+      price:
+        type: "array"
+        items:
+          type:
+            "integer"
+        example: [5, 8]
+      bedrooms:
+        type: "array"
+        items:
+          type:
+            "integer"
+        example: [2, 3]
+      bathrooms:
+        type: "array"
+        items:
+          type:
+            "integer"
+        example: [1, 2]
+      accomodates:
+        type: "array"
+        items:
+          type:
+            "integer"
+        example: [5, 7]
+      property_type:
+        type: "array"
+        items:
+          type:
+            "string"
+        example: [Apartment, Loft]
+      room_type:
+        type: "array"
+        items:
+          type:
+            "string"
+        example: [Entire home/apt, Private room]
+      neighbourhood:
+        type: "array"
+        items:
+          type:
+            "string"
+        example: [Reuterstraße, nördliche Luisenstadt]
+  PredictionBody:
+    type: "object"
+    properties:
+      bathrooms:
+        type: "integer"
+        example: 1
+      bedrooms:
+        type: "integer"
+        example: 3
+      accomodates:
+        type: "integer"
+        example: 3
+      guest_included:
+        type: "integer"
+        example: 6
+      gym:
+        type: "boolean"
+      ac:
+        type: "boolean"
+      elevator:
+        type: "boolean"
+      neighbourhood:
+        type: "string"
+      property_type:
+        type: "string"
+      room_type:
+        type: "string"
