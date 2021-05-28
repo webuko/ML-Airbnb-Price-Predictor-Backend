@@ -13,6 +13,7 @@ model.PRICE_PREDICTOR_ENCODER_LOCATION = str(parent) + '/code/encoders/airbnb_pr
 
 import random
 import pytest
+import json
 
 
 '''
@@ -99,29 +100,40 @@ def valid_model_input():
         if t == 'num':
             data[field] = random.randint(vals[0], vals[1])
         elif t == 'binary':
-            data[field] = random.randint(0, 1)
+            data[field] = random.choice([True, False])
         else:
             data[field] = random.choice(model.encoder_classes(field))
 
     return data
 
+def test_model_input_no_json_sent(flask_app):
+    with flask_app.test_request_context(method='POST'):
+        validated = model.validate_prediction_request(request)
+        assert ('error' in validated and validated['error'][
+            'msg'] == 'Request data must be transmitted as JSON object')
 
 def test_model_input_validation_all_fields_submitted(flask_app, valid_model_input):
     """Tests the validation for a prediction request with all required fields submitted."""
 
-    with flask_app.test_request_context(data=valid_model_input):
+    with flask_app.test_request_context(method='POST', json=valid_model_input):
         validated = model.validate_prediction_request(request)
-        print(validated)
         assert ('error' in validated and validated['error'][
             'msg'] == 'Make sure all required fields are submitted') is not True
 
-
 def test_model_input_validation_valid_response(flask_app, valid_model_input):
     """Tests the validation for a prediction request with valid request data."""
-    with flask_app.test_request_context(data=valid_model_input):
+
+    with flask_app.test_request_context(method='POST', json=valid_model_input):
         validated = model.validate_prediction_request(request)
         assert 'instances' in validated
 
+def test_model_input_validation_binary_field_not_bool(flask_app, valid_model_input):
+    # replace correct value for binary field
+    valid_model_input['gym'] = json.dumps('test')
+    with flask_app.test_request_context(method='POST', json=valid_model_input):
+        validated = model.validate_prediction_request(request)
+        assert ('error' in validated and validated['error'][
+            'msg'] == 'unallowed value for gym')
 
 def test_get_prediction(response_mock):
     """Tests the correct return value from a valid price prediction request."""

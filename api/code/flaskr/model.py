@@ -19,9 +19,9 @@ NECESSARY_FIELDS = OrderedDict([
     ('bedrooms', ('num', [0, 100])),
     ('accommodates', ('num', [0, 100])),
     ('guests_included', ('num', [0, 100])),
-    ('gym', ('binary', [0, 1])),
-    ('ac', ('binary', [0, 1])),
-    ('elevator', ('binary', [0, 1])),
+    ('gym', ('binary', [True, False])),
+    ('ac', ('binary', [True, False])),
+    ('elevator', ('binary', [True, False])),
     ('neighbourhood', ('encode', None)),
     ('property_type', ('encode', None)),
     ('room_type', ('encode', None))
@@ -80,21 +80,25 @@ def validate_prediction_request(request):
 
     features = []
 
+    if not request.json or not isinstance(request.json, dict):
+        return {'error': {'code': 400, 'msg': 'Request data must be transmitted as JSON object'}}
+
     for field, (t, vals) in NECESSARY_FIELDS.items():
-        if not request.form.get(field):
+        if request.json.get(field) is None:
             return {'error': {'code': 400, 'msg': 'Make sure all required fields are submitted'}}
 
-        el = request.form.get(field)
+        el = request.json.get(field)
 
         if t == 'num':
-            if not el.isdigit() or int(el) < vals[0] or int(el) > vals[1]:
+            if not isinstance(el, int) or el < vals[0] or el > vals[1]:
                 return {'error': {'code': 400, 'msg': f'unallowed value for {field}'}}
-            features.append(float(el))
+            features.append(el)
 
         elif t == 'binary':
-            if not el.isdigit() or int(el) not in vals:
+            if not isinstance(el, bool):
                 return {'error': {'code': 400, 'msg': f'unallowed value for {field}'}}
             features.append(int(el))
+            
         else:
             encoded = load_encoder_and_transform(field, el)
             if 'error' in encoded:
