@@ -5,10 +5,7 @@ from flasgger import Swagger
 import os
 
 def create_app():
-    """ Creates a flask app
-
-    This function is used to create an app (using the factory pattern).This way, 
-    the app can be instantiated with different servers (development / production)
+    """ Creates a flask app using the factory pattern. This way, the app can be instantiated with different servers (dev/prod).
 
     :returns: a flask application
     :rtype: flask.app
