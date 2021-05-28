@@ -8,7 +8,6 @@ sys.path.append(str(parent) + '/code/flaskr/')
 import request_helper
 
 import pytest
-import json
 
 
 @pytest.fixture
@@ -33,7 +32,7 @@ def test_project_listings_fields_param_missing(flask_app):
     }
     with flask_app.test_request_context(json=data, method='POST'):
         projected_request = request_helper.project_listings(request)
-        assert ('error' in projected_request 
+        assert ('error' in projected_request
         and projected_request['error']['msg'] == 'fields parameter missing')
 
 def test_project_listings_force_fields_wrong_type(flask_app):
@@ -85,7 +84,7 @@ def test_filtering_request_no_json_sent(flask_app):
 
     with flask_app.test_request_context(method='POST'):
         validated_request = request_helper.validate_filter_request(request)
-        assert ('error' in validated_request 
+        assert ('error' in validated_request
         and validated_request['error']['msg'] == 'Request data must be transmitted as JSON object')
 
 def test_filtering_request_criteria_param_missing(flask_app):
@@ -137,4 +136,3 @@ def test_filtering_request_valid_response(flask_app):
     with flask_app.test_request_context(method='POST', json=data):
         validated_request = request_helper.validate_filter_request(request)
         assert 'keys_filter' in validated_request
-

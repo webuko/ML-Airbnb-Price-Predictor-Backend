@@ -38,7 +38,7 @@ def filtered_listings():
     validated_request = validate_filter_request(request)
     if 'error' in validated_request:
          abort(validated_request['error']['code'], validated_request['error']['msg'])
-    
+
     keys_filter = validated_request['keys_filter']
 
     force_GET = request.json.get('fields') is None
@@ -98,14 +98,14 @@ def avg_price_neighbourhood():
 
     pipeline = [
         {
-            "$group": 
+            "$group":
             {
-                "_id":"$neighbourhood_cleansed", 
-                "avgPrice": {"$avg":"$price"}
+                "_id": "$neighbourhood_cleansed",
+                "avgPrice": {"$avg": "$price"}
             },
         },
-        {   
-            "$project": 
+        {
+            "$project":
             {
                 "neighbourhood": "$_id",
                 "_id": 0,
@@ -125,9 +125,9 @@ def avg_price_neighbourhood():
     docs = list(mongo.db.listings.aggregate(pipeline))
     max_val = max([doc['avgPrice'] for doc in docs])
     for doc in docs:
-        # assing max value
+        # assign max value
         doc['relAvgPrice'] = doc['avgPrice'] / max_val
-        # and get geojson
+        # get geojson
         geo = mongo.db.neighbourhood_geo.find_one({'properties.neighbourhood': doc['neighbourhood']})
         if geo:
             geo = geo.get('geometry', None)

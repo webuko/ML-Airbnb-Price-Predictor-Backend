@@ -70,7 +70,7 @@ def validate_prediction_request(request):
             if not isinstance(el, bool):
                 return {'error': {'code': 400, 'msg': f'unallowed value for {field}'}}
             features.append(int(el))
-            
+
         else:
             encoded = load_encoder_and_transform(field, el)
             if 'error' in encoded:

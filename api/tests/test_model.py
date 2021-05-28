@@ -119,4 +119,3 @@ def test_get_prediction(response_mock):
     with response_mock('POST ' + model.PRICE_PREDICTOR_URL + f' -> 200 :{expected_response}', bypass=False):
         p = model.get_prediction('anything')
         assert p == '42'
-

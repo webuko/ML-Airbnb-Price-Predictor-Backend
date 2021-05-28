@@ -82,5 +82,5 @@ def validate_filter_request(request):
                     len([e for e in el if str(e).isdigit()]) > 0:
                 return {'error': {'code': 400, 'msg': abort_msg}}
             keys_filter[criteria] = {'$in': el}
-    
+
     return {'keys_filter': keys_filter}
