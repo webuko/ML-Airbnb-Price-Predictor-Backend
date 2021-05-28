@@ -55,7 +55,7 @@ def test_project_listings_fields_wrong_type(flask_app):
     }
     with flask_app.test_request_context(json=data, method='POST'):
         projected_request = request_helper.project_listings(request)
-        assert ('error' in projected_request 
+        assert ('error' in projected_request
         and projected_request['error']['msg'] == 'Request data must be provided as array of keys')
 
 def test_project_listings_valid_request_fields(flask_app):
@@ -102,33 +102,33 @@ def test_filtering_request_numeric_field_wrong_type(flask_app):
     """ Tests whether a filter request with a wrongly submitted numeric filter criteria causes the correct error"""
 
     data = {
-        'criteria' : {
+        'criteria': {
             'price': 'test'
         }
     }
     with flask_app.test_request_context(method='POST', json=data):
         validated_request = request_helper.validate_filter_request(request)
-        assert ('error' in validated_request 
+        assert ('error' in validated_request
         and validated_request['error']['msg'] == 'filter criteria is not correctly provided')
 
 def test_filtering_request_string_field_wrong_type(flask_app):
     """ Tests whether a filter request with a wrongly submitted numeric filter criteria causes the correct error"""
 
     data = {
-        'criteria' : {
+        'criteria': {
             'neighbourhood': [1, 2]
         }
     }
     with flask_app.test_request_context(method='POST', json=data):
         validated_request = request_helper.validate_filter_request(request)
-        assert ('error' in validated_request 
+        assert ('error' in validated_request
         and validated_request['error']['msg'] == 'filter criteria is not correctly provided')
 
 def test_filtering_request_valid_response(flask_app):
     """ Tests whether a correctly submitted filter request is validated"""
 
     data = {
-        'criteria' : {
+        'criteria': {
             'price': [0, 100],
             'neighbourhood': ['Mitte']
         }

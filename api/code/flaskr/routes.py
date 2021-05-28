@@ -132,7 +132,7 @@ def avg_price_neighbourhood():
         if geo:
             geo = geo.get('geometry', None)
         doc['geometry'] = geo
-        
+
     json_data = bson_dumps(docs)
 
     response = make_response(json_data, 200)
