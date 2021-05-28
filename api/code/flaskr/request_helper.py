@@ -10,17 +10,29 @@ DEFAULT_RETURN_KEYS = [
     ]
 
 
-def filter_listings(request, force_GET=False):
+ALLOWED_CRITERIA = {
+        'price': 'num',
+        'bedrooms': 'num',
+        'bathrooms': 'num',
+        'accommodates': 'num',
+        'property_type': 'str',
+        'room_type': 'str',
+        'neighbourhood': 'str'
+    }
+
+
+def project_listings(request, force_GET=False):
     if request.method == 'POST' and not force_GET:
         if not request.json.get('fields'):
-            abort(400, 'fields parameter missing')
+            return {'error': {'code': 400, 'msg': 'fields parameter missing'}}
 
         if not isinstance(request.json['fields'], list):
-            abort(400, 'Request data must be provided as array of keys')
+            return {'error': {'code': 400, 'msg': 'Request data must be provided as array of keys'}}
+
         force_fields = False
         if request.json.get('force_fields'):
             if not isinstance(request.json['force_fields'], bool):
-                abort(400, 'force_field parameter must be provided as bool')
+                return {'error': {'code': 400, 'msg': 'force_field parameter must be provided as bool'}}
             force_fields = request.json['force_fields']
 
         keys_projection = {str(key): 1 for key in request.json['fields']}
@@ -33,4 +45,42 @@ def filter_listings(request, force_GET=False):
         keys_projection['_id'] = 0
         keys_filter = {}
 
-    return keys_filter, keys_projection
+    return {'keys_filter': keys_filter, 'keys_projection': keys_projection}
+
+
+def validate_filter_request(request):
+    """Validates a request for filtering listings from the database.
+
+    :param request: the request object sent by the user
+    :type: flask.request
+    :returns: a dictionary containing the validated request in the form of filtering keys (error and error msg in case of an error)
+    :rtype: dict
+    """
+
+    abort_msg = 'filter criteria is not correctly provided'
+    keys_filter = {}
+
+    if not request.json or not isinstance(request.json, dict):
+        return {'error': {'code': 400, 'msg': 'Request data must be transmitted as JSON object'}}
+
+    if not 'criteria' in request.json:
+        return {'error': {'code': 400, 'msg': 'criteria parameter missing'}}
+
+    for criteria, t in ALLOWED_CRITERIA.items():
+        el = request.json['criteria'].get(criteria, None)
+        if not el:
+            continue
+
+        if t == 'num':
+            if not isinstance(el, list) or \
+                    len(el) != 2 or \
+                    (not str(el[0]).isdigit() or not str(el[1]).isdigit()):
+                return {'error': {'code': 400, 'msg': abort_msg}}
+            keys_filter[criteria] = {'$gte': el[0], '$lte': el[1]}
+        else:
+            if not isinstance(el, list) or \
+                    len([e for e in el if str(e).isdigit()]) > 0:
+                return {'error': {'code': 400, 'msg': abort_msg}}
+            keys_filter[criteria] = {'$in': el}
+    
+    return {'keys_filter': keys_filter}
