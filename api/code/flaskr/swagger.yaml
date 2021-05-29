@@ -141,7 +141,7 @@ definitions:
       - fields
     properties:
       fields:
-        $ref: '#/definitions/possibleReturnValues' 
+        $ref: '#/definitions/possibleReturnKeys' 
       force_fields:
         description: "Defines whether only listings should be retrieved that contain a non-empty value for all requested fields, as defined by the fields property."
         type: "boolean"
@@ -156,7 +156,7 @@ definitions:
       criteria:
         $ref: '#/definitions/filterCriteria'
       fields:
-        $ref: '#/definitions/possibleReturnValues' 
+        $ref: '#/definitions/possibleReturnKeys' 
       force_fields:
         description: "Defines whether only listings should be retrieved that contain a non-empty value for all requested fields, as defined by the fields property."
         type: "boolean"
@@ -206,7 +206,7 @@ definitions:
       room_type:
         type: "string"
         example: "Private room"
-  possibleReturnValues:
+  possibleReturnKeys:
     type: "array"
     description: "Specifies which attributes for each listing should be retrieved."
     example: [description, price]
