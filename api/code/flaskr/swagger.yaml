@@ -70,7 +70,7 @@ paths:
           description: Everything was okay.
         '400':
           description: Oops, something went wrong. Check the error message and make sure data is correctly submitted.
-  /api/pricePrediction:
+  /pricePrediction:
     post:
       tags:
         - pricePrediction
