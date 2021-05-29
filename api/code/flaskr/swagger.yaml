@@ -104,6 +104,8 @@ paths:
 definitions:
   ListingSpecification:
     type: "object"
+    required:
+      - fields
     properties:
       fields:
         $ref: '#/definitions/possibleReturnValues' 
@@ -115,49 +117,60 @@ definitions:
       name: "ListingSpecification"
   FilterSpecification:
     type: "object"
+    required:
+      - criteria
     properties:
-      price:
-        type: "array"
-        items:
-          type:
-            "integer"
-        example: [5, 8]
-      bedrooms:
-        type: "array"
-        items:
-          type:
-            "integer"
-        example: [2, 3]
-      bathrooms:
-        type: "array"
-        items:
-          type:
-            "integer"
-        example: [1, 2]
-      accomodates:
-        type: "array"
-        items:
-          type:
-            "integer"
-        example: [5, 7]
-      property_type:
-        type: "array"
-        items:
-          type:
-            "string"
-        example: [Apartment, Loft]
-      room_type:
-        type: "array"
-        items:
-          type:
-            "string"
-        example: [Entire home/apt, Private room]
-      neighbourhood:
-        type: "array"
-        items:
-          type:
-            "string"
-        example: [Reuterstraße, nördliche Luisenstadt]
+      criteria:
+        type: "object"
+        properties:
+          price:
+            type: "array"
+            items:
+              type:
+                "integer"
+            example: [1, 100]
+          bedrooms:
+            type: "array"
+            items:
+              type:
+                "integer"
+            example: [1, 5]
+          bathrooms:
+            type: "array"
+            items:
+              type:
+                "integer"
+            example: [1, 5]
+          accomodates:
+            type: "array"
+            items:
+              type:
+                "integer"
+            example: [1, 5]
+          property_type:
+            type: "array"
+            items:
+              type:
+                "string"
+            example: [House, Apartment, Loft]
+          room_type:
+            type: "array"
+            items:
+              type:
+                "string"
+            example: [Entire home/apt, Private room]
+          neighbourhood:
+            type: "array"
+            items:
+              type:
+                "string"
+            example: [Adlershof]
+      fields:
+        $ref: '#/definitions/possibleReturnValues' 
+      force_fields:
+        description: "Defines whether only listings should be retrieved that contain a non-empty value for all requested fields, as defined by the fields property."
+        type: "boolean"
+        example: false
   PredictionBody:
     type: "object"
     properties:
@@ -188,9 +201,9 @@ definitions:
   possibleReturnValues:
     type: "array"
     description: "Specifies which attributes for each listing should be retrieved."
+    example: [description, price]
     items:
       type: "string"
-      example: "price"
       enum: ['id',
                  'listing_url',
                  'scrape_id',
