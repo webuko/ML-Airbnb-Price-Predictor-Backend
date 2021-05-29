@@ -2,7 +2,7 @@
 DEFAULT_RETURN_KEYS = [
     'id', 'name', 'description', 'price',
     'host_name', 'host_picture_url', 'picture_url',
-    'bedrooms', 'bathrooms', 'bedrooms', 'accommodates',
+    'bedrooms', 'bathrooms', 'accommodates',
     'property_type', 'room_type', 'neighbourhood',
     'longitude', 'latitude', 'city'
     ]

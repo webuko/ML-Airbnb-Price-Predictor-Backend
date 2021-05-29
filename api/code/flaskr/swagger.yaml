@@ -30,6 +30,8 @@ paths:
       responses:
         '200':
           description: successful operation
+          schema:
+            $ref: "#/definitions/listingsReturnObject"
     post:
       tags:
         - allListings
@@ -49,6 +51,8 @@ paths:
       responses:
         '200':
           description: Everything was okay.
+          schema:
+            $ref: "#/definitions/listingsReturnObject"
         '400':
           description: Oops, something went wrong. Check the error message and make sure data is correctly submitted.
   /filterListings:
@@ -69,6 +73,8 @@ paths:
       responses:
         '200':
           description: Everything was okay.
+          schema:
+            $ref: "#/definitions/listingsReturnObject"
         '400':
           description: Oops, something went wrong. Check the error message and make sure data is correctly submitted.
   /pricePrediction:
@@ -225,112 +231,52 @@ definitions:
     example: [description, price]
     items:
       type: "string"
-      enum: ['id',
-                 'listing_url',
-                 'scrape_id',
-                 'last_scraped',
-                 'name',
-                 'summary',
-                 'space',
-                 'description',
-                 'experiences_offered',
-                 'neighborhood_overview',
-                 'notes',
-                 'transit',
-                 'access',
-                 'interaction',
-                 'house_rules',
-                 'thumbnail_url',
-                 'medium_url',
-                 'picture_url',
-                 'xl_picture_url',
-                 'host_id',
-                 'host_url',
-                 'host_name',
-                 'host_since',
-                 'host_location',
-                 'host_about',
-                 'host_response_time',
-                 'host_response_rate',
-                 'host_acceptance_rate',
-                 'host_is_superhost',
-                 'host_thumbnail_url',
-                 'host_picture_url',
-                 'host_neighbourhood',
-                 'host_listings_count',
-                 'host_total_listings_count',
-                 'host_verifications',
-                 'host_has_profile_pic',
-                 'host_identity_verified',
-                 'street',
-                 'neighbourhood',
-                 'neighbourhood_cleansed',
-                 'neighbourhood_group_cleansed',
-                 'city',
-                 'state',
-                 'zipcode',
-                 'market',
-                 'smart_location',
-                 'country_code',
-                 'country',
-                 'latitude',
-                 'longitude',
-                 'is_location_exact',
-                 'property_type',
-                 'room_type',
-                 'accommodates',
-                 'bathrooms',
-                 'bedrooms',
-                 'beds',
-                 'bed_type',
-                 'amenities',
-                 'square_feet',
-                 'price',
-                 'weekly_price',
-                 'monthly_price',
-                 'security_deposit',
-                 'cleaning_fee',
-                 'guests_included',
-                 'extra_people',
-                 'minimum_nights',
-                 'maximum_nights',
-                 'minimum_minimum_nights',
-                 'maximum_minimum_nights',
-                 'minimum_maximum_nights',
-                 'maximum_maximum_nights',
-                 'minimum_nights_avg_ntm',
-                 'maximum_nights_avg_ntm',
-                 'calendar_updated',
-                 'has_availability',
-                 'availability_30',
-                 'availability_60',
-                 'availability_90',
-                 'availability_365',
-                 'calendar_last_scraped',
-                 'number_of_reviews',
-                 'number_of_reviews_ltm',
-                 'first_review',
-                 'last_review',
-                 'review_scores_rating',
-                 'review_scores_accuracy',
-                 'review_scores_cleanliness',
-                 'review_scores_checkin',
-                 'review_scores_communication',
-                 'review_scores_location',
-                 'review_scores_value',
-                 'requires_license',
-                 'license',
-                 'jurisdiction_names',
-                 'instant_bookable',
-                 'is_business_travel_ready',
-                 'cancellation_policy',
-                 'require_guest_profile_picture',
-                 'require_guest_phone_verification',
-                 'calculated_host_listings_count',
-                 'calculated_host_listings_count_entire_homes',
-                 'calculated_host_listings_count_private_rooms',
-                 'calculated_host_listings_count_shared_rooms',
-                 'reviews_per_month']
+      enum: [ 'id',
+              'listing_url',
+              'name',
+              'summary',
+              'space',
+              'description',
+              'experiences_offered',
+              'neighborhood_overview',
+              'notes',
+              'transit',
+              'interaction',
+              'picture_url',
+              'host_url',
+              'host_name',
+              'host_about',
+              'host_response_time',
+              'host_response_rate',
+              'host_acceptance_rate',
+              'host_picture_url',
+              'neighbourhood',
+              'city',
+              'latitude',
+              'longitude',
+              'room_type',
+              'property_type',
+              'accommodates',
+              'bathrooms',
+              'bedrooms',
+              'price',
+              'square_feet',
+              'amenities',
+              'weekly_price',
+              'monthly_price',
+              'security_deposit',
+              'cleaning_fee',
+              'guests_included',
+              'minimum_nights',
+              'maximum_nights',
+              'number_of_reviews',
+              'review_scores_rating',
+              'review_scores_accuracy',
+              'review_scores_cleanliness',
+              'review_scores_checkin',
+              'review_scores_communication',
+              'review_scores_location',
+              'review_scores_value' ]
   filterCriteria:
     type: "object"
     properties:
@@ -986,4 +932,104 @@ definitions:
                     ]
                 ]
             ]
-    
+  listingsReturnObject:
+    type: array
+    description: Array of returned listing objects
+    items:
+      type: object
+      description: A listing
+      properties:
+        id:
+          type: "number"
+        listing_url:
+          type: "string"
+        name:
+          type: "string"
+        summary:
+          type: "string"
+        space:
+          type: "string"
+        description:
+          type: "string"
+        experiences_offered:
+          type: "string"
+        neighborhood_overview:
+          type: "string"
+        notes:
+          type: "string"
+        transit:
+          type: "string"
+        interaction:
+          type: "string"
+        picture_url:
+          type: "string"
+        host_url:
+            type: "string"
+        host_name:
+            type: "string"
+        host_about:
+          type: "string"
+        host_response_time:
+          type: "string"
+        host_response_rate:
+          type: "string"
+        host_acceptance_rate:
+          type: "string"
+        host_picture_url:
+          type: "string"
+        neighbourhood:
+          type: "string"
+        city:
+          type: "string"
+        latitude:
+          type: "number"
+        longitude:
+          type: "number"
+        room_type:
+          type: "string"
+        property_type:
+          type: "string"
+        accommodates:
+          type: "number"
+        bathrooms:
+          type: "number"
+        bedrooms:
+          type: "number"
+        price:
+          type: "number"
+        square_feet:
+          type: "number"
+        amenities:
+          type: "array"
+          items:
+            type: "string"
+        weekly_price:
+          type: "number"
+        monthly_price:
+          type: "number"
+        security_deposit:
+          type: "number"
+        cleaning_fee:
+          type: "number"
+        guests_included:
+          type: "number"
+        minimum_nights:
+          type: "number"
+        maximum_nights:
+          type: "number"
+        number_of_reviews:
+          type: "number"
+        review_scores_rating:
+          type: "number"
+        review_scores_accuracy:
+          type: "number"
+        review_scores_cleanliness:
+          type: "number"
+        review_scores_checkin:
+          type: "number"
+        review_scores_communication:
+          type: "number"
+        review_scores_location:
+          type: "number"
+        review_scores_value:
+          type: "number"
