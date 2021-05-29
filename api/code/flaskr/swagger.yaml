@@ -14,6 +14,8 @@ tags:
     description: Get a price prediction.
   - name: pricePredictionParamValues
     description: Get the required parameters for executing a price prediction.
+  - name: avgPricePerNeighbourhood
+    description: Get the average price per neighbourhood. Additionally, the geojson data for a neighbourhood is returned, as well.
 schemes:
   - http
 paths:
@@ -23,7 +25,6 @@ paths:
         - allListings
       summary: Get all listings with all available attributes.
       description: ''
-      operationId: ''
       produces:
         - application/json
       responses:
@@ -101,6 +102,38 @@ paths:
           description: successful operation
         '400':
           description: Invalid status value
+  /avgPricePerNeighbourhood:
+    get:
+      tags:
+        - avgPricePerNeighbourhood
+      summary: Get average prices for all neighbourhoods without pre-filtering.
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+    post:
+      tags:
+        - avgPricePerNeighbourhood
+      summary: Get average prices for all neighbourhoods with pre-filtering.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: Filter
+          description: The filter specification can contain any combination of the specified example arrays as seen below. Every entry in the request body is optional. Note that all numeric arrays in the request body must have exactly length **2**. The first position denotes the lower bound and the second position corresponds to the upper bound (both including).
+          schema:
+            type: "object"
+            properties:
+              criteria:
+                $ref: '#/definitions/filterCriteria'
+      responses:
+        '200':
+          description: Everything was okay.
+        '400':
+          description: Oops, something went wrong. Check the error message and make sure data is correctly submitted.
 definitions:
   ListingSpecification:
     type: "object"
@@ -121,50 +154,7 @@ definitions:
       - criteria
     properties:
       criteria:
-        type: "object"
-        properties:
-          price:
-            type: "array"
-            items:
-              type:
-                "integer"
-            example: [1, 100]
-          bedrooms:
-            type: "array"
-            items:
-              type:
-                "integer"
-            example: [1, 5]
-          bathrooms:
-            type: "array"
-            items:
-              type:
-                "integer"
-            example: [1, 5]
-          accomodates:
-            type: "array"
-            items:
-              type:
-                "integer"
-            example: [1, 5]
-          property_type:
-            type: "array"
-            items:
-              type:
-                "string"
-            example: [House, Apartment, Loft]
-          room_type:
-            type: "array"
-            items:
-              type:
-                "string"
-            example: [Entire home/apt, Private room]
-          neighbourhood:
-            type: "array"
-            items:
-              type:
-                "string"
-            example: [Adlershof]
+        $ref: '#/definitions/filterCriteria'
       fields:
         $ref: '#/definitions/possibleReturnValues' 
       force_fields:
@@ -328,3 +318,49 @@ definitions:
                  'calculated_host_listings_count_private_rooms',
                  'calculated_host_listings_count_shared_rooms',
                  'reviews_per_month']
+  filterCriteria:
+    type: "object"
+    properties:
+      price:
+        type: "array"
+        items:
+          type:
+            "integer"
+        example: [1, 100]
+      bedrooms:
+        type: "array"
+        items:
+          type:
+            "integer"
+        example: [1, 5]
+      bathrooms:
+        type: "array"
+        items:
+          type:
+            "integer"
+        example: [1, 5]
+      accomodates:
+        type: "array"
+        items:
+          type:
+            "integer"
+        example: [1, 5]
+      property_type:
+        type: "array"
+        items:
+          type:
+            "string"
+        example: [House, Apartment, Loft]
+      room_type:
+        type: "array"
+        items:
+          type:
+            "string"
+        example: [Entire home/apt, Private room]
+      neighbourhood:
+        type: "array"
+        items:
+          type:
+            "string"
+        example: [Adlershof]
+    
