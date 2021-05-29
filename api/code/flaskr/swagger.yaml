@@ -3,6 +3,8 @@ info:
   description: 'This is the API documentation for the WeBuKo application.<br><br>All API methods can be called via `/api/method_name`. There is no authentication involved as all data and software in this project is open source. Data cannot be altered, only retrieved. API methods make use of the HTTP methods GET and POST. Where applicable, is specified below.'
   version: 1.0.0
   title: WeBuKo
+host: "localhost:5000"
+basePath: "/api"
 tags:
   - name: allListings
     description: Retrieve all available listings.
@@ -13,10 +15,9 @@ tags:
   - name: pricePredictionParamValues
     description: Get the required parameters for executing a price prediction.
 schemes:
-  - https
   - http
 paths:
-  /api/allListings:
+  /allListings:
     get:
       tags:
         - allListings
@@ -49,7 +50,7 @@ paths:
           description: Everything was okay.
         '400':
           description: Oops, something went wrong. Check the error message and make sure data is correctly submitted.
-  /api/filterListings:
+  /filterListings:
     post:
       tags:
         - filterListings
@@ -69,7 +70,7 @@ paths:
           description: Everything was okay.
         '400':
           description: Oops, something went wrong. Check the error message and make sure data is correctly submitted.
-  /api/pricePrediction:
+  /pricePrediction:
     post:
       tags:
         - pricePrediction
@@ -87,7 +88,7 @@ paths:
       responses:
         '200':
           description: Successful operation
-  /api/pricePredictionParamValues:
+  /pricePredictionParamValues:
     get:
       tags:
         - pricePredictionParamValues
@@ -184,21 +185,27 @@ definitions:
       bedrooms:
         type: "integer"
         example: 3
-      accomodates:
+      accommodates:
         type: "integer"
         example: 3
-      guest_included:
+      guests_included:
         type: "integer"
-        example: 6
+        example: 2
       gym:
         type: "boolean"
+        example: false
       ac:
         type: "boolean"
+        example: true
       elevator:
         type: "boolean"
+        example: false
       neighbourhood:
         type: "string"
+        example: "Adlershof"
       property_type:
         type: "string"
+        example: "House"
       room_type:
         type: "string"
+        example: "Private room"
