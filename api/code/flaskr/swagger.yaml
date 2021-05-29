@@ -89,6 +89,13 @@ paths:
       responses:
         '200':
           description: Successful operation
+          schema:
+            type: object
+            properties:
+              price:
+                type: string
+                description: The predicted price
+                example: "34.7757721"
   /pricePredictionParamValues:
     get:
       tags:
