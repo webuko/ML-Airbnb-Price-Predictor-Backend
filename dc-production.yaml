@@ -25,3 +25,13 @@ services:
       - '--model_config_file=/models/model.config'
     ports:
       - 8501:8501
+
+  flutter-app:
+    image: webuko/frontend:snapshot
+    depends_on:
+      - mongodb
+      - flaskapi
+      - tensorflow-serving
+    restart: on-failure
+    ports:
+      - 8080
