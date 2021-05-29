@@ -2,6 +2,7 @@ flask==1.1.2
 flask-cors
 pymongo
 Flask-PyMongo
+flasgger
 sklearn
 requests
 waitress
