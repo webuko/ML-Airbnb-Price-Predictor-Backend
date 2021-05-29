@@ -1,4 +1,4 @@
-name: api-publish
+name: latest-publish
 
 on:
   pull_request:
