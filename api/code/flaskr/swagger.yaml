@@ -81,7 +81,7 @@ paths:
       parameters:
         - in: body
           name: PredictionBody
-          description: a
+          description: Parameters needed for making a price prediction
           required: true
           schema:
             $ref: "#/definitions/PredictionBody"
@@ -173,6 +173,18 @@ definitions:
         example: false
   PredictionBody:
     type: "object"
+    required:
+       - price
+       - bedrooms
+       - bathrooms
+       - accommodates
+       - guests_included
+       - gym
+       - ac
+       - elevator
+       - neighbourhood
+       - property_type
+       - room_type
     properties:
       bathrooms:
         type: "integer"
@@ -180,24 +192,30 @@ definitions:
       bedrooms:
         type: "integer"
         example: 3
-      accomodates:
+      accommodates:
         type: "integer"
         example: 3
-      guest_included:
+      guests_included:
         type: "integer"
         example: 6
       gym:
         type: "boolean"
+        example: false
       ac:
         type: "boolean"
+        example: true
       elevator:
         type: "boolean"
+        example: true
       neighbourhood:
         type: "string"
+        example: "Adlershof"
       property_type:
         type: "string"
+        example: "House"
       room_type:
         type: "string"
+        example: "Private room"
   possibleReturnValues:
     type: "array"
     description: "Specifies which attributes for each listing should be retrieved."
