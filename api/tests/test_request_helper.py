@@ -12,6 +12,8 @@ import pytest
 
 @pytest.fixture
 def flask_app():
+    """ Returns a flask application instance for testing purposes."""
+
     app = Flask(__name__)
     app.testing = True
     return app

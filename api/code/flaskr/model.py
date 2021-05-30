@@ -70,7 +70,7 @@ def encoder_classes(encoder):
 
 def validate_prediction_request(request):
     """Validate and process a price prediction request.
-    
+
     :param request: the request object sent by the user
     :type: flask.request
 

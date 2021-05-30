@@ -18,8 +18,9 @@ CORS(api_bp)
 def all_listings():
     """Endpoint for retrieving all listings.
 
-        For an explanation on how to use the api check out our API documentation on github:
-        https://github.com/webuko/backend/wiki/API-Documentation#alllistings
+    For an explanation on how to use the api check out our API documentation on github:
+    https://github.com/webuko/backend/wiki/API-Documentation#alllistings
+    or visit the subpage /apidocs.
     """
 
     projected_request = project_listings(request)
@@ -43,6 +44,7 @@ def filtered_listings():
 
     For an explanation on how to use the api check out our API documentation on github:
     https://github.com/webuko/backend/wiki/API-Documentation#filterlistings
+    or visit the subpage /apidocs.
     """
 
     validated_request = validate_filter_request(request)
@@ -73,6 +75,7 @@ def price_prediction():
 
     For an explanation on how to use the api check out our API documentation on github:
     https://github.com/webuko/backend/wiki/API-Documentation#priceprediction
+    or visit the subpage /apidocs.
     """
 
     validated_request = validate_prediction_request(request)
@@ -99,6 +102,7 @@ def price_prediction_param_values():
 
     For an explanation on how to use the api check out our API documentation on github:
     https://github.com/webuko/backend/wiki/API-Documentation#pricepredictionparamvalues
+    or visit the subpage /apidocs.
     """
 
     param_values = allowed_prediction_features()
@@ -116,6 +120,7 @@ def avg_price_neighbourhood():
     """Endpoint for retrieving the average price per neighbourhood (including geojson data).
         For an explanation on how to use the api check out our API documentation on github:
         https://github.com/webuko/backend/wiki/API-Documentation#avgpriceperneighbourhood
+        or visit the subpage /apidocs.
     """
 
     pipeline = [
@@ -142,6 +147,9 @@ def avg_price_neighbourhood():
                 abort(validated_request['error']['code'], validated_request['error']['msg'])
 
             keys_filter = validated_request['keys_filter']
+            # now we have to make sure neighbourhood is not a filter (just in case)
+            if 'neighbourhood' in keys_filter:
+                del keys_filter['neighbourhood']
             pipeline.insert(0, {"$match": keys_filter})
 
     docs = list(mongo.db.listings.aggregate(pipeline))
