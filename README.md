@@ -58,6 +58,8 @@ docker-compose up
 
 ### Production environment
 
+> **Note:** The provided docker-compose files start up the full application including the frontend application that was built in connection to this API (see [here](https://github.com/webuko/frontend)).
+
 If you want to use this API in a production environment, you can use the file `dc-production.yaml` with
 `docker-compose`. You can pull the images and then start the containers with the following commands:
 
