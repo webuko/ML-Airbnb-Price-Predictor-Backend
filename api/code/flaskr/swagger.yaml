@@ -29,7 +29,7 @@ paths:
         - application/json
       responses:
         '200':
-          description: successful operation
+          description: Everything was okay.
           schema:
             $ref: "#/definitions/listingsReturnObject"
     post:
@@ -94,7 +94,7 @@ paths:
             $ref: "#/definitions/PredictionBody"
       responses:
         '200':
-          description: Successful operation
+          description: Everything was okay.
           schema:
             type: object
             properties:
@@ -112,9 +112,32 @@ paths:
         - application/json
       responses:
         '200':
-          description: successful operation
+          description: Everything was okay.
         '400':
-          description: Invalid status value
+          description: Oops, something went wrong. Check the error message and make sure data is correctly submitted.
+          schema:
+            type: "object"
+            properties:
+              bathrooms:
+                $ref: "#/definitions/pricePredictionParamNumeric"
+              bedrooms:
+                 $ref: "#/definitions/pricePredictionParamNumeric"
+              accommodates:
+                 $ref: "#/definitions/pricePredictionParamNumeric"
+              gym:
+                 $ref: "#/definitions/pricePredictionParamBinary"
+              ac:
+                 $ref: "#/definitions/pricePredictionParamBinary"
+              elevator:
+                 $ref: "#/definitions/pricePredictionParamBinary"
+              neighbourhood:
+                 $ref: "#/definitions/pricePredictionParamString"
+              property_type:
+                 $ref: "#/definitions/pricePredictionParamString"
+              room_type:
+                 $ref: "#/definitions/pricePredictionParamString"
+                
+                
   /avgPricePerNeighbourhood:
     get:
       tags:
@@ -124,7 +147,7 @@ paths:
         - application/json
       responses:
         '200':
-          description: successful operation
+          description: Everything was okay.
           schema:
             $ref: '#/definitions/avgPricePerNeighbourhoodReturnObject'
     post:
@@ -138,7 +161,7 @@ paths:
       parameters:
         - in: body
           name: Filter
-          description: The filter specification can contain any combination of the specified example arrays as seen below. Every entry in the request body is optional. Note that all numeric arrays in the request body must have exactly length **2**. The first position denotes the lower bound and the second position corresponds to the upper bound (both including).
+          description: The filter specification can contain any combination of the specified example arrays as seen below. Every entry in the request body is optional. Note that all numeric arrays in the request body must have exactly length **2**. The first position denotes the lower bound and the second position corresponds to the upper bound (both including). Note that the neighbourhood property in this case can be included, however, it will not be used in the prefiltering. It can be included so the Filter object can be convienently reused (if it's already used for basic listings filtering).
           schema:
             type: "object"
             properties:
@@ -228,7 +251,7 @@ definitions:
   possibleReturnKeys:
     type: "array"
     description: "Specifies which attributes for each listing should be retrieved."
-    example: [description, price]
+    example: [name, price]
     items:
       type: "string"
       enum: [ 'id',
@@ -1033,3 +1056,39 @@ definitions:
           type: "number"
         review_scores_value:
           type: "number"
+  pricePredictionParamNumeric:
+    type: "object"
+    properties:
+      type:
+        type: "string"
+        description: The type of filter criteria. Is always "num" for this type of response object.
+      values:
+        type: "array"
+        description: An array containing two integers. The first one is the lower bound (inclusive) and the second one the higher bound (inclusive) for filtering numeric values for the corresponding key/parameter.
+        example: [0, 100]
+        items:
+          type: "integer"
+  pricePredictionParamBinary:
+    type: "object"
+    properties:
+      type:
+        type: "string"
+        description: The type of filter criteria. Is always "binary" for this type of response object.
+      values:
+        type: "array"
+        description: An array containing the allowed boolean values for the corresponding key/parameter..
+        example: [True, False]
+        items:
+          type: "boolean"
+  pricePredictionParamString:
+    type: "object"
+    properties:
+      type:
+        type: "string"
+        description: The type of filter criteria. Is always "string" for this type of response object.
+      values:
+        type: "array"
+        example: [stringA, stringB, stringC]
+        description: An array containing the allowed string values for the corresponding key/parameter.
+        items:
+          type: "string"

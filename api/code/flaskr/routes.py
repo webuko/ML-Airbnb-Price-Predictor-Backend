@@ -147,6 +147,9 @@ def avg_price_neighbourhood():
                 abort(validated_request['error']['code'], validated_request['error']['msg'])
 
             keys_filter = validated_request['keys_filter']
+            # now we have to make sure neighbourhood is not a filter (just in case)
+            if 'neighbourhood' in keys_filter:
+                del keys_filter['neighbourhood']
             pipeline.insert(0, {"$match": keys_filter})
 
     docs = list(mongo.db.listings.aggregate(pipeline))
