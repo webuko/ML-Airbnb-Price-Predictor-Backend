@@ -74,7 +74,7 @@ def price_prediction():
     """Endpoint for making a price prediction request.
 
     For an explanation on how to use the api check out our API documentation on github:
-    https://github.com/webuko/backend/wiki/API-Documentation#priceprediction 
+    https://github.com/webuko/backend/wiki/API-Documentation#priceprediction
     or visit the subpage /apidocs.
     """
 
