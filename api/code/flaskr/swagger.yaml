@@ -1,0 +1,1094 @@
+swagger: '2.0'
+info:
+  description: 'This is the API documentation for the WeBuKo application.<br><br>All API methods can be called via `/api/method_name`. There is no authentication involved as all data and software in this project is open source. Data cannot be altered, only retrieved. API methods make use of the HTTP methods GET and POST. Where applicable, is specified below.'
+  version: 1.0.0
+  title: WeBuKo
+host: "localhost:5000"
+basePath: "/api"
+tags:
+  - name: allListings
+    description: Retrieve all available listings.
+  - name: filterListings
+    description: Retrieve filtered listings.
+  - name: pricePrediction
+    description: Get a price prediction.
+  - name: pricePredictionParamValues
+    description: Get the required parameters for executing a price prediction.
+  - name: avgPricePerNeighbourhood
+    description: Get the average price per neighbourhood. Additionally, the geojson data for a neighbourhood is returned, as well.
+schemes:
+  - http
+paths:
+  /allListings:
+    get:
+      tags:
+        - allListings
+      summary: Get all listings with all available attributes.
+      description: ''
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Everything was okay.
+          schema:
+            $ref: "#/definitions/listingsReturnObject"
+    post:
+      tags:
+        - allListings
+      summary: Get all listings with specific attributes only.
+      description: ''
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: Specification
+          description: The specific values that are looked for in the requested listings.
+          required: true
+          schema:
+            $ref: "#/definitions/ListingSpecification"
+      responses:
+        '200':
+          description: Everything was okay.
+          schema:
+            $ref: "#/definitions/listingsReturnObject"
+        '400':
+          description: Oops, something went wrong. Check the error message and make sure data is correctly submitted.
+  /filterListings:
+    post:
+      tags:
+        - filterListings
+      summary: Filter the listings according to the provided inputs.
+      description: The listings can be filtered according to the passed body as described below.
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: Filter
+          description: The filter specification can contain any combination of the specified example arrays as seen below. Every entry in the request body is optional. Note that all numeric arrays in the request body must have exactly length **2**. The first position denotes the lower bound and the second position corresponds to the upper bound (both including).
+          required: true
+          schema:
+            $ref: "#/definitions/FilterSpecification"
+      responses:
+        '200':
+          description: Everything was okay.
+          schema:
+            $ref: "#/definitions/listingsReturnObject"
+        '400':
+          description: Oops, something went wrong. Check the error message and make sure data is correctly submitted.
+  /pricePrediction:
+    post:
+      tags:
+        - pricePrediction
+      summary: Gets a price estimation for a potential not yet listed AirBnB accommodation based on the specified characteristics.
+      description: The specified fields are fed into a machine learning model that outputs an estimated price that could be offered when adding such an accommodation to AirBnB.
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: PredictionBody
+          description: Parameters needed for making a price prediction
+          required: true
+          schema:
+            $ref: "#/definitions/PredictionBody"
+      responses:
+        '200':
+          description: Everything was okay.
+          schema:
+            type: object
+            properties:
+              price:
+                type: string
+                description: The predicted price
+                example: "34.7757721"
+  /pricePredictionParamValues:
+    get:
+      tags:
+        - pricePredictionParamValues
+      summary: Retrieve `pricePrediction` API request parameters.
+      description: Retrieve valid values for the parameters of the `pricePrediction` API request.
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Everything was okay.
+        '400':
+          description: Oops, something went wrong. Check the error message and make sure data is correctly submitted.
+          schema:
+            type: "object"
+            properties:
+              bathrooms:
+                $ref: "#/definitions/pricePredictionParamNumeric"
+              bedrooms:
+                 $ref: "#/definitions/pricePredictionParamNumeric"
+              accommodates:
+                 $ref: "#/definitions/pricePredictionParamNumeric"
+              gym:
+                 $ref: "#/definitions/pricePredictionParamBinary"
+              ac:
+                 $ref: "#/definitions/pricePredictionParamBinary"
+              elevator:
+                 $ref: "#/definitions/pricePredictionParamBinary"
+              neighbourhood:
+                 $ref: "#/definitions/pricePredictionParamString"
+              property_type:
+                 $ref: "#/definitions/pricePredictionParamString"
+              room_type:
+                 $ref: "#/definitions/pricePredictionParamString"
+                
+                
+  /avgPricePerNeighbourhood:
+    get:
+      tags:
+        - avgPricePerNeighbourhood
+      summary: Get average prices for all neighbourhoods without pre-filtering.
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Everything was okay.
+          schema:
+            $ref: '#/definitions/avgPricePerNeighbourhoodReturnObject'
+    post:
+      tags:
+        - avgPricePerNeighbourhood
+      summary: Get average prices for all neighbourhoods with pre-filtering.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: Filter
+          description: The filter specification can contain any combination of the specified example arrays as seen below. Every entry in the request body is optional. Note that all numeric arrays in the request body must have exactly length **2**. The first position denotes the lower bound and the second position corresponds to the upper bound (both including). Note that the neighbourhood property in this case can be included, however, it will not be used in the prefiltering. It can be included so the Filter object can be convienently reused (if it's already used for basic listings filtering).
+          schema:
+            type: "object"
+            properties:
+              criteria:
+                $ref: '#/definitions/filterCriteria'
+      responses:
+        '200':
+          description: Everything was okay.
+          schema:
+            $ref: '#/definitions/avgPricePerNeighbourhoodReturnObject'
+          
+            
+        '400':
+          description: Oops, something went wrong. Check the error message and make sure data is correctly submitted.
+definitions:
+  ListingSpecification:
+    type: "object"
+    required:
+      - fields
+    properties:
+      fields:
+        $ref: '#/definitions/possibleReturnKeys' 
+      force_fields:
+        description: "Defines whether only listings should be retrieved that contain a non-empty value for all requested fields, as defined by the fields property."
+        type: "boolean"
+        example: true
+    xml:
+      name: "ListingSpecification"
+  FilterSpecification:
+    type: "object"
+    required:
+      - criteria
+    properties:
+      criteria:
+        $ref: '#/definitions/filterCriteria'
+      fields:
+        $ref: '#/definitions/possibleReturnKeys' 
+      force_fields:
+        description: "Defines whether only listings should be retrieved that contain a non-empty value for all requested fields, as defined by the fields property."
+        type: "boolean"
+        example: false
+  PredictionBody:
+    type: "object"
+    required:
+       - price
+       - bedrooms
+       - bathrooms
+       - accommodates
+       - guests_included
+       - gym
+       - ac
+       - elevator
+       - neighbourhood
+       - property_type
+       - room_type
+    properties:
+      bathrooms:
+        type: "integer"
+        example: 1
+      bedrooms:
+        type: "integer"
+        example: 3
+      accommodates:
+        type: "integer"
+        example: 3
+      guests_included:
+        type: "integer"
+        example: 6
+      gym:
+        type: "boolean"
+        example: false
+      ac:
+        type: "boolean"
+        example: true
+      elevator:
+        type: "boolean"
+        example: true
+      neighbourhood:
+        type: "string"
+        example: "Adlershof"
+      property_type:
+        type: "string"
+        example: "House"
+      room_type:
+        type: "string"
+        example: "Private room"
+  possibleReturnKeys:
+    type: "array"
+    description: "Specifies which attributes for each listing should be retrieved."
+    example: [name, price]
+    items:
+      type: "string"
+      enum: [ 'id',
+              'listing_url',
+              'name',
+              'summary',
+              'space',
+              'description',
+              'experiences_offered',
+              'neighborhood_overview',
+              'notes',
+              'transit',
+              'interaction',
+              'picture_url',
+              'host_url',
+              'host_name',
+              'host_about',
+              'host_response_time',
+              'host_response_rate',
+              'host_acceptance_rate',
+              'host_picture_url',
+              'neighbourhood',
+              'city',
+              'latitude',
+              'longitude',
+              'room_type',
+              'property_type',
+              'accommodates',
+              'bathrooms',
+              'bedrooms',
+              'price',
+              'square_feet',
+              'amenities',
+              'weekly_price',
+              'monthly_price',
+              'security_deposit',
+              'cleaning_fee',
+              'guests_included',
+              'minimum_nights',
+              'maximum_nights',
+              'number_of_reviews',
+              'review_scores_rating',
+              'review_scores_accuracy',
+              'review_scores_cleanliness',
+              'review_scores_checkin',
+              'review_scores_communication',
+              'review_scores_location',
+              'review_scores_value' ]
+  filterCriteria:
+    type: "object"
+    properties:
+      price:
+        type: "array"
+        items:
+          type:
+            "integer"
+        example: [1, 100]
+      bedrooms:
+        type: "array"
+        items:
+          type:
+            "integer"
+        example: [1, 5]
+      bathrooms:
+        type: "array"
+        items:
+          type:
+            "integer"
+        example: [1, 5]
+      accomodates:
+        type: "array"
+        items:
+          type:
+            "integer"
+        example: [1, 5]
+      property_type:
+        type: "array"
+        items:
+          type:
+            "string"
+        example: [House, Apartment, Loft]
+      room_type:
+        type: "array"
+        items:
+          type:
+            "string"
+        example: [Entire home/apt, Private room]
+      neighbourhood:
+        type: "array"
+        items:
+          type:
+            "string"
+        example: [Adlershof]
+  avgPricePerNeighbourhoodReturnObject:
+    type: "array"
+    items:
+      type: "object"
+      properties:
+        avgPrice:
+          type: "number"
+          description: The average price of the neighbourhood (in $).
+          example: 35.5
+        relAvgPrice:
+          type: "number"
+          description: A relative value in the range [0, 1], where the value for the neighbourhood with the highest absolute average price is set to 1.
+          example: 0.1047282279248333
+        neighbourhood:
+          type: "string"
+          description: The name of the neighbourhood.
+          example: "Hellersdorf-Nord"
+        geometry:
+          type: "object"
+          description: A geojson object for the corresponding returned neighbourhood.
+          properties:
+            type:
+              type: "string"
+              enum: ["Multipolygon"]
+            coordinates:
+              type: "array"
+              items:
+                type: "array"
+                items:
+                  type: "array"
+                  items:
+                    type: "number"
+          example: [
+                [
+                    [
+                        [
+                            13.596192,
+                            52.534142
+                        ],
+                        [
+                            13.595436,
+                            52.533924
+                        ],
+                        [
+                            13.595299,
+                            52.533888
+                        ],
+                        [
+                            13.595162,
+                            52.533869
+                        ],
+                        [
+                            13.595122,
+                            52.533863
+                        ],
+                        [
+                            13.594839,
+                            52.533775
+                        ],
+                        [
+                            13.594589,
+                            52.533681
+                        ],
+                        [
+                            13.594196,
+                            52.533523
+                        ],
+                        [
+                            13.593923,
+                            52.533404
+                        ],
+                        [
+                            13.59381,
+                            52.533354
+                        ],
+                        [
+                            13.593673,
+                            52.533285
+                        ],
+                        [
+                            13.593569,
+                            52.533232
+                        ],
+                        [
+                            13.593448,
+                            52.533164
+                        ],
+                        [
+                            13.593207,
+                            52.532993
+                        ],
+                        [
+                            13.59295,
+                            52.532818
+                        ],
+                        [
+                            13.592322,
+                            52.532921
+                        ],
+                        [
+                            13.592213,
+                            52.533081
+                        ],
+                        [
+                            13.591665,
+                            52.533378
+                        ],
+                        [
+                            13.591471,
+                            52.533482
+                        ],
+                        [
+                            13.591395,
+                            52.533537
+                        ],
+                        [
+                            13.591313,
+                            52.5336
+                        ],
+                        [
+                            13.591183,
+                            52.533783
+                        ],
+                        [
+                            13.591045,
+                            52.533801
+                        ],
+                        [
+                            13.589617,
+                            52.533854
+                        ],
+                        [
+                            13.588375,
+                            52.533936
+                        ],
+                        [
+                            13.588202,
+                            52.533946
+                        ],
+                        [
+                            13.586621,
+                            52.534009
+                        ],
+                        [
+                            13.58665,
+                            52.534063
+                        ],
+                        [
+                            13.586653,
+                            52.534294
+                        ],
+                        [
+                            13.586626,
+                            52.534678
+                        ],
+                        [
+                            13.586458,
+                            52.535131
+                        ],
+                        [
+                            13.586246,
+                            52.535337
+                        ],
+                        [
+                            13.585617,
+                            52.536147
+                        ],
+                        [
+                            13.585178,
+                            52.536727
+                        ],
+                        [
+                            13.584442,
+                            52.537496
+                        ],
+                        [
+                            13.583824,
+                            52.538061
+                        ],
+                        [
+                            13.583572,
+                            52.538262
+                        ],
+                        [
+                            13.583295,
+                            52.538533
+                        ],
+                        [
+                            13.58263,
+                            52.538787
+                        ],
+                        [
+                            13.581994,
+                            52.539078
+                        ],
+                        [
+                            13.581459,
+                            52.539593
+                        ],
+                        [
+                            13.581299,
+                            52.539757
+                        ],
+                        [
+                            13.581172,
+                            52.539906
+                        ],
+                        [
+                            13.581147,
+                            52.539935
+                        ],
+                        [
+                            13.580915,
+                            52.540766
+                        ],
+                        [
+                            13.580759,
+                            52.541571
+                        ],
+                        [
+                            13.580715,
+                            52.542147
+                        ],
+                        [
+                            13.580904,
+                            52.542952
+                        ],
+                        [
+                            13.581086,
+                            52.543155
+                        ],
+                        [
+                            13.581211,
+                            52.543287
+                        ],
+                        [
+                            13.581729,
+                            52.543833
+                        ],
+                        [
+                            13.582384,
+                            52.544355
+                        ],
+                        [
+                            13.582499,
+                            52.544479
+                        ],
+                        [
+                            13.582906,
+                            52.545108
+                        ],
+                        [
+                            13.58293,
+                            52.545164
+                        ],
+                        [
+                            13.582978,
+                            52.545376
+                        ],
+                        [
+                            13.583577,
+                            52.546224
+                        ],
+                        [
+                            13.584046,
+                            52.546649
+                        ],
+                        [
+                            13.58435,
+                            52.547113
+                        ],
+                        [
+                            13.584741,
+                            52.547853
+                        ],
+                        [
+                            13.585241,
+                            52.548423
+                        ],
+                        [
+                            13.585297,
+                            52.548481
+                        ],
+                        [
+                            13.586102,
+                            52.549366
+                        ],
+                        [
+                            13.586377,
+                            52.549782
+                        ],
+                        [
+                            13.586556,
+                            52.549757
+                        ],
+                        [
+                            13.587406,
+                            52.549447
+                        ],
+                        [
+                            13.589998,
+                            52.549019
+                        ],
+                        [
+                            13.594233,
+                            52.54831
+                        ],
+                        [
+                            13.598817,
+                            52.54754
+                        ],
+                        [
+                            13.602708,
+                            52.546883
+                        ],
+                        [
+                            13.603352,
+                            52.546777
+                        ],
+                        [
+                            13.605531,
+                            52.546418
+                        ],
+                        [
+                            13.610589,
+                            52.545583
+                        ],
+                        [
+                            13.61299,
+                            52.545185
+                        ],
+                        [
+                            13.613975,
+                            52.545013
+                        ],
+                        [
+                            13.617637,
+                            52.544414
+                        ],
+                        [
+                            13.6186,
+                            52.544256
+                        ],
+                        [
+                            13.618796,
+                            52.544219
+                        ],
+                        [
+                            13.619089,
+                            52.544186
+                        ],
+                        [
+                            13.619453,
+                            52.544153
+                        ],
+                        [
+                            13.619556,
+                            52.54414
+                        ],
+                        [
+                            13.619612,
+                            52.544129
+                        ],
+                        [
+                            13.619874,
+                            52.544104
+                        ],
+                        [
+                            13.620036,
+                            52.544093
+                        ],
+                        [
+                            13.622294,
+                            52.543902
+                        ],
+                        [
+                            13.628261,
+                            52.54339
+                        ],
+                        [
+                            13.633058,
+                            52.54295
+                        ],
+                        [
+                            13.634387,
+                            52.542825
+                        ],
+                        [
+                            13.635483,
+                            52.542289
+                        ],
+                        [
+                            13.636334,
+                            52.54223
+                        ],
+                        [
+                            13.637367,
+                            52.542257
+                        ],
+                        [
+                            13.637651,
+                            52.540927
+                        ],
+                        [
+                            13.635726,
+                            52.53903
+                        ],
+                        [
+                            13.634897,
+                            52.538227
+                        ],
+                        [
+                            13.634747,
+                            52.538259
+                        ],
+                        [
+                            13.634707,
+                            52.538188
+                        ],
+                        [
+                            13.633781,
+                            52.538394
+                        ],
+                        [
+                            13.632534,
+                            52.538663
+                        ],
+                        [
+                            13.631876,
+                            52.538811
+                        ],
+                        [
+                            13.631488,
+                            52.538898
+                        ],
+                        [
+                            13.630242,
+                            52.539139
+                        ],
+                        [
+                            13.629549,
+                            52.53924
+                        ],
+                        [
+                            13.628611,
+                            52.539312
+                        ],
+                        [
+                            13.628031,
+                            52.539342
+                        ],
+                        [
+                            13.62754,
+                            52.539359
+                        ],
+                        [
+                            13.627126,
+                            52.539383
+                        ],
+                        [
+                            13.626579,
+                            52.539406
+                        ],
+                        [
+                            13.625939,
+                            52.539433
+                        ],
+                        [
+                            13.625464,
+                            52.539454
+                        ],
+                        [
+                            13.624849,
+                            52.539485
+                        ],
+                        [
+                            13.623478,
+                            52.539521
+                        ],
+                        [
+                            13.622309,
+                            52.539555
+                        ],
+                        [
+                            13.621563,
+                            52.539523
+                        ],
+                        [
+                            13.620696,
+                            52.539468
+                        ],
+                        [
+                            13.619984,
+                            52.539356
+                        ],
+                        [
+                            13.619994,
+                            52.539429
+                        ],
+                        [
+                            13.61964,
+                            52.539398
+                        ],
+                        [
+                            13.615556,
+                            52.538831
+                        ],
+                        [
+                            13.615561,
+                            52.538788
+                        ],
+                        [
+                            13.614034,
+                            52.538468
+                        ],
+                        [
+                            13.614053,
+                            52.538439
+                        ],
+                        [
+                            13.613364,
+                            52.538287
+                        ],
+                        [
+                            13.612616,
+                            52.538144
+                        ],
+                        [
+                            13.610255,
+                            52.5377
+                        ],
+                        [
+                            13.610182,
+                            52.537627
+                        ],
+                        [
+                            13.60879,
+                            52.537341
+                        ],
+                        [
+                            13.607754,
+                            52.537129
+                        ],
+                        [
+                            13.607655,
+                            52.537089
+                        ],
+                        [
+                            13.605905,
+                            52.536637
+                        ],
+                        [
+                            13.605327,
+                            52.536505
+                        ],
+                        [
+                            13.604733,
+                            52.536348
+                        ],
+                        [
+                            13.604666,
+                            52.536433
+                        ],
+                        [
+                            13.60454,
+                            52.536449
+                        ],
+                        [
+                            13.604079,
+                            52.536339
+                        ],
+                        [
+                            13.603862,
+                            52.536282
+                        ],
+                        [
+                            13.603254,
+                            52.536115
+                        ],
+                        [
+                            13.603086,
+                            52.536068
+                        ],
+                        [
+                            13.601479,
+                            52.535625
+                        ],
+                        [
+                            13.600816,
+                            52.535466
+                        ],
+                        [
+                            13.59852,
+                            52.534827
+                        ],
+                        [
+                            13.597189,
+                            52.534457
+                        ],
+                        [
+                            13.597053,
+                            52.534385
+                        ],
+                        [
+                            13.596192,
+                            52.534142
+                        ]
+                    ]
+                ]
+            ]
+  listingsReturnObject:
+    type: array
+    description: Array of returned listing objects
+    items:
+      type: object
+      description: A listing
+      properties:
+        id:
+          type: "number"
+        listing_url:
+          type: "string"
+        name:
+          type: "string"
+        summary:
+          type: "string"
+        space:
+          type: "string"
+        description:
+          type: "string"
+        experiences_offered:
+          type: "string"
+        neighborhood_overview:
+          type: "string"
+        notes:
+          type: "string"
+        transit:
+          type: "string"
+        interaction:
+          type: "string"
+        picture_url:
+          type: "string"
+        host_url:
+            type: "string"
+        host_name:
+            type: "string"
+        host_about:
+          type: "string"
+        host_response_time:
+          type: "string"
+        host_response_rate:
+          type: "string"
+        host_acceptance_rate:
+          type: "string"
+        host_picture_url:
+          type: "string"
+        neighbourhood:
+          type: "string"
+        city:
+          type: "string"
+        latitude:
+          type: "number"
+        longitude:
+          type: "number"
+        room_type:
+          type: "string"
+        property_type:
+          type: "string"
+        accommodates:
+          type: "number"
+        bathrooms:
+          type: "number"
+        bedrooms:
+          type: "number"
+        price:
+          type: "number"
+        square_feet:
+          type: "number"
+        amenities:
+          type: "array"
+          items:
+            type: "string"
+        weekly_price:
+          type: "number"
+        monthly_price:
+          type: "number"
+        security_deposit:
+          type: "number"
+        cleaning_fee:
+          type: "number"
+        guests_included:
+          type: "number"
+        minimum_nights:
+          type: "number"
+        maximum_nights:
+          type: "number"
+        number_of_reviews:
+          type: "number"
+        review_scores_rating:
+          type: "number"
+        review_scores_accuracy:
+          type: "number"
+        review_scores_cleanliness:
+          type: "number"
+        review_scores_checkin:
+          type: "number"
+        review_scores_communication:
+          type: "number"
+        review_scores_location:
+          type: "number"
+        review_scores_value:
+          type: "number"
+  pricePredictionParamNumeric:
+    type: "object"
+    properties:
+      type:
+        type: "string"
+        description: The type of filter criteria. Is always "num" for this type of response object.
+      values:
+        type: "array"
+        description: An array containing two integers. The first one is the lower bound (inclusive) and the second one the higher bound (inclusive) for filtering numeric values for the corresponding key/parameter.
+        example: [0, 100]
+        items:
+          type: "integer"
+  pricePredictionParamBinary:
+    type: "object"
+    properties:
+      type:
+        type: "string"
+        description: The type of filter criteria. Is always "binary" for this type of response object.
+      values:
+        type: "array"
+        description: An array containing the allowed boolean values for the corresponding key/parameter..
+        example: [True, False]
+        items:
+          type: "boolean"
+  pricePredictionParamString:
+    type: "object"
+    properties:
+      type:
+        type: "string"
+        description: The type of filter criteria. Is always "string" for this type of response object.
+      values:
+        type: "array"
+        example: [stringA, stringB, stringC]
+        description: An array containing the allowed string values for the corresponding key/parameter.
+        items:
+          type: "string"

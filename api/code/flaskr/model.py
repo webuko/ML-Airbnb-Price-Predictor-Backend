@@ -3,22 +3,25 @@ import requests
 import pickle
 from collections import OrderedDict
 
+
 # url for accessing price prediction micro service
 PRICE_PREDICTOR_URL = "http://tensorflow-serving:8501/v1/models/price_predictor:predict"
 # model (and version) to use
 PRICE_PREDICTOR_ENCODER_LOCATION = "encoders/airbnb_price_net/1/"
 
-# This ordered dict stores all necessary fields for the price prediction.
-# Note that it's an ordered dict and the order corresponds to the order of the feature list that must be provided to
-# the prediction model.
+"""
+This ordered dict stores all necessary fields for the price prediction.
+Note that it's an ordered dict and the order corresponds to the order of the feature list that must be provided to
+the prediction model.
+"""
 NECESSARY_FIELDS = OrderedDict([
     ('bathrooms', ('num', [0, 100])),
     ('bedrooms', ('num', [0, 100])),
     ('accommodates', ('num', [0, 100])),
     ('guests_included', ('num', [0, 100])),
-    ('gym', ('binary', [0, 1])),
-    ('ac', ('binary', [0, 1])),
-    ('elevator', ('binary', [0, 1])),
+    ('gym', ('binary', [True, False])),
+    ('ac', ('binary', [True, False])),
+    ('elevator', ('binary', [True, False])),
     ('neighbourhood', ('encode', None)),
     ('property_type', ('encode', None)),
     ('room_type', ('encode', None))
@@ -26,6 +29,17 @@ NECESSARY_FIELDS = OrderedDict([
 
 
 def load_encoder_and_transform(encoder, val):
+    """Loads an encoder and then encodes the given value.
+
+    :param encoder: the name of the decoder that should be used
+    :type: string
+    :param val: the value that should be encoded
+    :type: string
+
+    :returns: a dictionary containing the encoded value (error and error msg in case of an error)
+    :rtype: dict
+    """
+
     try:
         encoder = pickle.load(open(f'{PRICE_PREDICTOR_ENCODER_LOCATION}{encoder}_encoder.pickle', 'rb'))
     except FileNotFoundError:
@@ -38,6 +52,15 @@ def load_encoder_and_transform(encoder, val):
 
 
 def encoder_classes(encoder):
+    """Get possible encoder values for a given encoder.
+
+    :param encoder: the name of the decoder that should be used
+    :type: string
+
+    :returns: a list containing the possible encoder values
+    :rtype: list
+    """
+
     try:
         encoder = pickle.load(open(f'{PRICE_PREDICTOR_ENCODER_LOCATION}{encoder}_encoder.pickle', 'rb'))
     except FileNotFoundError:
@@ -46,27 +69,36 @@ def encoder_classes(encoder):
 
 
 def validate_prediction_request(request):
+    """Validate and process a price prediction request.
+
+    :param request: the request object sent by the user
+    :type: flask.request
+
+    :returns: a dictionary containing the processed request (error and error msg in case of an error)
+    :rtype: dict
     """
-    This function validates the post data sent for a price prediction request.
-    The function returns a dict.
-    """
+
     features = []
 
+    if not request.json or not isinstance(request.json, dict):
+        return {'error': {'code': 400, 'msg': 'Request data must be transmitted as JSON object'}}
+
     for field, (t, vals) in NECESSARY_FIELDS.items():
-        if not request.form.get(field):
+        if request.json.get(field) is None:
             return {'error': {'code': 400, 'msg': 'Make sure all required fields are submitted'}}
 
-        el = request.form.get(field)
+        el = request.json.get(field)
 
         if t == 'num':
-            if not el.isdigit() or int(el) < vals[0] or int(el) > vals[1]:
+            if not isinstance(el, int) or el < vals[0] or el > vals[1]:
                 return {'error': {'code': 400, 'msg': f'unallowed value for {field}'}}
-            features.append(float(el))
+            features.append(el)
 
         elif t == 'binary':
-            if not el.isdigit() or int(el) not in vals:
+            if not isinstance(el, bool):
                 return {'error': {'code': 400, 'msg': f'unallowed value for {field}'}}
             features.append(int(el))
+
         else:
             encoded = load_encoder_and_transform(field, el)
             if 'error' in encoded:
@@ -77,7 +109,15 @@ def validate_prediction_request(request):
 
 
 def get_prediction(instances):
-    # format correctly
+    """Send a processed request to the prediction microservice.
+
+    :param instances: a list containing the features in the needed format for the prediction model
+    :type: list
+
+    :returns: the prediction
+    :rtype: str
+    """
+
     request_data = json.dumps(instances)
 
     request = requests.post(PRICE_PREDICTOR_URL, request_data)
@@ -85,10 +125,16 @@ def get_prediction(instances):
     if request.status_code == 200:
         return str(json.loads(request.text)['predictions'][0][0])
     else:
-        return str(request.text)
+        return False
 
 
 def allowed_prediction_features():
+    """Send a processed request to the prediction microservice.
+
+    :returns: the necessary fields along with the type and allowed values
+    :rtype: dict
+    """
+    
     features = {}
     for field, (t, vals) in NECESSARY_FIELDS.items():
         if t != 'encode':

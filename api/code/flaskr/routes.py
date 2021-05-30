@@ -1,9 +1,7 @@
-import os
-
 from flask import Blueprint, request, abort, make_response
 from flask_cors import CORS, cross_origin
 from flaskr.model import get_prediction, validate_prediction_request, allowed_prediction_features
-from flaskr.request_helper import filter_listings
+from flaskr.request_helper import project_listings, validate_filter_request
 from flaskr.db import mongo
 
 from json import dumps as json_dumps
@@ -18,8 +16,21 @@ CORS(api_bp)
 @api_bp.route('/api/allListings', methods=['GET', 'POST'])
 @cross_origin(origins='*', methods=['GET', 'POST'])
 def all_listings():
-    keys_filter, keys_projection = filter_listings(request)
+    """Endpoint for retrieving all listings.
+
+    For an explanation on how to use the api check out our API documentation on github:
+    https://github.com/webuko/backend/wiki/API-Documentation#alllistings
+    or visit the subpage /apidocs.
+    """
+
+    projected_request = project_listings(request)
+    if 'error' in projected_request:
+        abort(projected_request['error']['code'], projected_request['error']['msg'])
+
+    keys_filter, keys_projection = projected_request['keys_filter'], projected_request['keys_projection']
+
     json_data = bson_dumps(mongo.db.listings.find(keys_filter, keys_projection))
+
     response = make_response(json_data, 200)
     response.headers['Content-type'] = 'application/json'
 
@@ -29,46 +40,27 @@ def all_listings():
 @api_bp.route('/api/filterListings', methods=['POST'])
 @cross_origin(origins='*', methods=['POST'])
 def filtered_listings():
-    abort_msg = 'filter criteria is not correctly provided'
-    filter = {}
+    """Endpoint for retrieving filtering listings.
 
-    allowed_criteria = {
-        'price': 'num',
-        'bedrooms': 'num',
-        'bathrooms': 'num',
-        'accommodates': 'num',
-        'property_type': 'str',
-        'room_type': 'str',
-        'neighbourhood': 'str'
-    }
+    For an explanation on how to use the api check out our API documentation on github:
+    https://github.com/webuko/backend/wiki/API-Documentation#filterlistings
+    or visit the subpage /apidocs.
+    """
 
-    if not request.json or not isinstance(request.json, dict):
-        abort(400, 'Request data must be transmitted as JSON object')
+    validated_request = validate_filter_request(request)
+    if 'error' in validated_request:
+         abort(validated_request['error']['code'], validated_request['error']['msg'])
 
-    if not 'criteria' in request.json:
-        abort(400, 'criteria parameter missing')
-
-    for criteria, type in allowed_criteria.items():
-        el = request.json['criteria'].get(criteria, None)
-        if not el:
-            continue
-
-        if type == 'num':
-            if not isinstance(el, list) or \
-                    len(el) != 2 or \
-                    (not str(el[0]).isdigit() or not str(el[1]).isdigit()):
-                abort(400, abort_msg)
-            filter[criteria] = {'$gte': el[0], '$lte': el[1]}
-        else:
-            if not isinstance(el, list) or \
-                    len([e for e in el if str(e).isdigit()]) > 0:
-                abort(400, abort_msg)
-            filter[criteria] = {'$in': el}
+    keys_filter = validated_request['keys_filter']
 
     force_GET = request.json.get('fields') is None
-    _, keys_projection = filter_listings(request, force_GET)
+    projected_request = project_listings(request, force_GET)
+    if 'error' in projected_request:
+        abort(projected_request['error']['code'], projected_request['error']['msg'])
 
-    json_data = bson_dumps(mongo.db.listings.find(filter, keys_projection))
+    keys_projection = projected_request['keys_projection']
+
+    json_data = bson_dumps(mongo.db.listings.find(keys_filter, keys_projection))
 
     response = make_response(json_data, 200)
     response.headers['Content-type'] = 'application/json'
@@ -79,6 +71,13 @@ def filtered_listings():
 @api_bp.route('/api/pricePrediction', methods=['POST'])
 @cross_origin(origins='*', methods=['POST'])
 def price_prediction():
+    """Endpoint for making a price prediction request.
+
+    For an explanation on how to use the api check out our API documentation on github:
+    https://github.com/webuko/backend/wiki/API-Documentation#priceprediction
+    or visit the subpage /apidocs.
+    """
+
     validated_request = validate_prediction_request(request)
 
     if 'error' in validated_request:
@@ -99,8 +98,72 @@ def price_prediction():
 @api_bp.route('/api/pricePredictionParamValues', methods=['GET'])
 @cross_origin(origins='*', methods=['GET'])
 def price_prediction_param_values():
+    """Endpoint for retrieving the parameters necessary for a price prediction.
+
+    For an explanation on how to use the api check out our API documentation on github:
+    https://github.com/webuko/backend/wiki/API-Documentation#pricepredictionparamvalues
+    or visit the subpage /apidocs.
+    """
+
     param_values = allowed_prediction_features()
     json_data = json_dumps(param_values)
+
+    response = make_response(json_data, 200)
+    response.headers['Content-Type'] = 'application/json'
+
+    return response
+
+
+@api_bp.route('/api/avgPricePerNeighbourhood', methods=['GET', 'POST'])
+@cross_origin(origins='*', methods=['GET', 'POST'])
+def avg_price_neighbourhood():
+    """Endpoint for retrieving the average price per neighbourhood (including geojson data).
+        For an explanation on how to use the api check out our API documentation on github:
+        https://github.com/webuko/backend/wiki/API-Documentation#avgpriceperneighbourhood
+        or visit the subpage /apidocs.
+    """
+
+    pipeline = [
+        {
+            "$group":
+            {
+                "_id": "$neighbourhood_cleansed",
+                "avgPrice": {"$avg": "$price"}
+            },
+        },
+        {
+            "$project":
+            {
+                "neighbourhood": "$_id",
+                "_id": 0,
+                "avgPrice": 1,
+            }
+        },
+    ]
+
+    if request.method == 'POST' and request.json and request.json.get('criteria'):
+            validated_request = validate_filter_request(request)
+            if 'error' in validated_request:
+                abort(validated_request['error']['code'], validated_request['error']['msg'])
+
+            keys_filter = validated_request['keys_filter']
+            # now we have to make sure neighbourhood is not a filter (just in case)
+            if 'neighbourhood' in keys_filter:
+                del keys_filter['neighbourhood']
+            pipeline.insert(0, {"$match": keys_filter})
+
+    docs = list(mongo.db.listings.aggregate(pipeline))
+    max_val = max([doc['avgPrice'] for doc in docs])
+    for doc in docs:
+        # assign max value
+        doc['relAvgPrice'] = doc['avgPrice'] / max_val
+        # get geojson
+        geo = mongo.db.neighbourhood_geo.find_one({'properties.neighbourhood': doc['neighbourhood']})
+        if geo:
+            geo = geo.get('geometry', None)
+        doc['geometry'] = geo
+
+    json_data = bson_dumps(docs)
 
     response = make_response(json_data, 200)
     response.headers['Content-Type'] = 'application/json'
