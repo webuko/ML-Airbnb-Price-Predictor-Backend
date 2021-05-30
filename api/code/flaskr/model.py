@@ -117,7 +117,7 @@ def get_prediction(instances):
     :returns: the prediction
     :rtype: str
     """
-    
+
     request_data = json.dumps(instances)
 
     request = requests.post(PRICE_PREDICTOR_URL, request_data)
