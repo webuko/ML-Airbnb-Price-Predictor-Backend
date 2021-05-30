@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   flaskapi:
-    image: webuko/api:latest
+    image: webuko/api:snapshot
     environment:
       - FLASK_ENV=production
     ports:
@@ -9,25 +9,25 @@ services:
     command: waitress-serve --host 0.0.0.0 --port 5000 --call flaskr:create_app
 
   mongodb:
-    image: webuko/db:latest
+    image: webuko/db:snapshot
     ports:
       - 27017:27017
 
   mongo_seed:
-    image: webuko/db-seed:latest
+    image: webuko/db-seed:snapshot
     depends_on:
       - mongodb
     restart: on-failure
 
   tensorflow-serving:
-    image: webuko/tf:latest
+    image: webuko/tf:snapshot
     command:
       - '--model_config_file=/models/model.config'
     ports:
       - 8501:8501
 
   flutter-app:
-    image: webuko/frontend:latest
+    image: webuko/frontend:snapshot
     depends_on:
       - mongodb
       - flaskapi

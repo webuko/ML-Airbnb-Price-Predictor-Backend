@@ -34,6 +34,7 @@ The API aims to deliver the following functionalities:
 
 - Retrieve data for Airbnb listings in Berlin
 - Filter data (e.g. for price ranges or a specific neighbourhood)
+- Provide polygon geoJson data for neighbourhoods and their respective average Airbnb prices
 - Get price predictions for a not yet published Airbnb listings
 
 As stated above, please consult the **[wiki](https://github.com/webuko/backend/wiki/API-Documentation)** for a more
