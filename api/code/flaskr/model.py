@@ -125,7 +125,7 @@ def get_prediction(instances):
     if request.status_code == 200:
         return str(json.loads(request.text)['predictions'][0][0])
     else:
-        return str(request.text)
+        return False
 
 
 def allowed_prediction_features():
