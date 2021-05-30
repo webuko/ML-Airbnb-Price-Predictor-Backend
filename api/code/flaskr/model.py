@@ -110,7 +110,7 @@ def validate_prediction_request(request):
 
 def get_prediction(instances):
     """Send a processed request to the prediction microservice.
-    
+
     :param instances: a list containing the features in the needed format for the prediction model
     :type: list
 
