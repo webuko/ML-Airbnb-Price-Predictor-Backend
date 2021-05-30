@@ -64,6 +64,5 @@ If you want to use this API in a production environment, you can use the file `d
 `docker-compose`. You can pull the images and then start the containers with the following commands:
 
 ```shell
-docker-compose -f dc-production.yaml pull
 docker-compose -f dc-production.yaml up
 ```
